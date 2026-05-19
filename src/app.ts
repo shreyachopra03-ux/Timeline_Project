@@ -3,6 +3,12 @@ import express from "express";
 import connectDB from "./config/database";
 const app = express();
 const PORT:number = Number(process.env.PORT) || 7777;
+import authRouter from "./routes/auth";
+
+app.use(express.json());
+
+// Routes
+app.use("/", authRouter);
 
 function startServer(port: number) {
     const server = app.listen(port, () => {
