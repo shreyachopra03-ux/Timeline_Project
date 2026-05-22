@@ -13,6 +13,7 @@
   "description": "",
   "dependencies": {
     "@clerk/clerk-sdk-node": "^4.13.23",
+    "@clerk/express": "^2.1.20",
     "bcrypt": "^6.0.0",
     "bcryptjs": "^3.0.3",
     "cloudinary": "^2.10.0",
