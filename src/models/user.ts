@@ -1,6 +1,20 @@
 import mongoose from "mongoose";
+import { Document, Schema } from "mongoose";
 
-const userSchema = new mongoose.Schema({
+export interface IUser extends Document {
+    clerkId: string,
+    name: string,
+    email: string,
+    avatar: string,
+    storageUsed: number
+}
+
+const userSchema = new Schema<IUser> ({
+    clerkId: {
+        type: String,
+        required: true,
+        unique: true
+    },
     name: {
         type: String,
         required: true
@@ -8,23 +22,20 @@ const userSchema = new mongoose.Schema({
     email: {
         type: String,
         required: true,
-        unique: true,
-        trim: true,
-        lowercase: true
-    },
-    password: {
-        type: String,
-        required: true,
-        minlength: 6,
+        unique: true
     },
     avatar: {
         type: String,
-        default: "https://e7.pngegg.com/pngimages/84/165/png-clipart-united-states-avatar-organization-information-user-avatar-service-computer-wallpaper-thumbnail.png"
-    }
+        default: ""
+    },
+    storageUsed: {
+        type: Number,
+        default: 0
+    },
 }, {
     timestamps: true
 });
 
-const User = mongoose.model("User", userSchema);
+const User = mongoose.model<IUser>("User", userSchema);
 
 export default User;
