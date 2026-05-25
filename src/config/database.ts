@@ -1,8 +1,7 @@
+import "dotenv/config";
 import mongoose from "mongoose";
-import type { Request, Response } from "express";
 
-const connectDB = async (req: Request, res: Response) => {
+export const connectDB = async () => {
     const server = mongoose.connect(process.env.MONGO_URI as string);
-}
+};
 
-export default connectDB;
