@@ -7,9 +7,6 @@ import { connectDB } from "./config/database";
 const PORT: any = Number(process.env.PORT) || 7777;
 
 app.use((req, res, next) => {
-    console.log("CLERK WEBHOOK INCOMING REQ");
-        console.log("HEADERS:", JSON.stringify(req.headers, null, 2));
-        console.log("BODY (RAW):", req.body ? req.body.toString("utf-8") : "No body found");
     res.setHeader("bypass-tunnel-reminder", "true");
     next()
 });
