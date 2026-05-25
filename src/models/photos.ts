@@ -3,7 +3,6 @@ import mongoose from "mongoose";
 const photoSchema = new mongoose.Schema({
     clerkId: {
         type: String,
-        unique: true,
         required: true,
     },
     url: {
@@ -13,7 +12,8 @@ const photoSchema = new mongoose.Schema({
         type: String
     },
     date: {
-        type: Date
+        type: Date,
+        default: Date.now
     },
     title: {
         type: String
