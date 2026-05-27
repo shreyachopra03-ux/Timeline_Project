@@ -14,8 +14,6 @@ export const uploadPhoto = async (req: AuthenticatedRequest, res: Response) => {
         return res.status(401).json({ success: false, message: "Unauthorized! User not found." });
     };
 
-    
-
     try {
         if(!req.file) {
             return res.json(400).json({ success: false, message: "Photo file is required !" });
@@ -44,7 +42,7 @@ export const uploadPhoto = async (req: AuthenticatedRequest, res: Response) => {
         const tagsArray = tags ? tags.split(',').map((tag: string) => tag.trim()) : [];
 
         const newPhoto = await Photos.create({
-            clerkId: req.user.id,
+            clerkId: (req as any).auth?.userId,
             url: cloudinaryResult.url,
             public_id: cloudinaryResult.public_id,
             date: new Date(),
@@ -52,10 +50,10 @@ export const uploadPhoto = async (req: AuthenticatedRequest, res: Response) => {
             tags: tagsArray
         });
 
-
+        return res.status(200).json({ success: true, message: "Photo successfully uploaded and saved !", data: newPhoto });
 
     } catch (err) {
-
-    }
-
+        console.error("Upload error details:", err);
+        return res.status(500).json({ success: false, message: "Server error: Photo upload failed." });
+    };
 }
