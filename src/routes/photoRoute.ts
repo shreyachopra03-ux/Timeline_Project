@@ -1,7 +1,9 @@
 import express from "express";
+import { uploadPhoto } from "../controllers/photoController.js";
+import { upload } from "../middleware/multer.js"; 
+import { clerkAuthGuard } from "../middleware/clerkAuthGuard.js";
 const photoRouter = express.Router();
-import { uploadPhoto }  from "../controllers/photoController";
-import { upload } from "../middleware/multer";
-import { requireAuth } from "@clerk/express";
 
-photoRouter.post("/upload", requireAuth , upload, uploadPhoto);
+photoRouter.post("/upload", upload.single("photo"), clerkAuthGuard, uploadPhoto as any);
+
+export default photoRouter;
