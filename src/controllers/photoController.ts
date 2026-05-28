@@ -56,4 +56,60 @@ export const uploadPhoto = async (req: AuthenticatedRequest, res: Response): Pro
         console.error("Upload error details:", err);
         return res.status(500).json({ success: false, message: "Server error: Photo upload failed." });
     };
-}
+};
+
+export const uploadBulkPhotos = async (req: Request, res: Response) => {
+
+    try {
+
+        const files = req.files as Express.Multer.File[];
+        // console.log(files);
+        if(!files || files.length === 0) {
+            return res.status(400).json({ success: false, message: "Image files not found!"})
+        }
+
+        const { title, tags } = req.body;
+        const tagsArray = tags && typeof tags === 'string' ? tags.split(',').map((tag: string) => tag.trim()) : [];
+        // console.log(tagsArray);
+
+        const uploadPromises = files.map((file: any, index: number) => {
+            // console.log(`Processing file index: ${index}, name: ${file.originalname}`);
+            return new Promise((resolve, reject) => {
+                const stream = cloudinary.uploader.upload_stream(
+                    { folder: 'bulk_photos' },
+                    (error, result) => {
+                        if(error) {
+                            console.error(`Cloudinary error for file ${index}:`, error);
+                            return reject(error);
+                        }
+                        // console.log(`cloudinary success for file ${index}`);
+                        resolve(result);
+                    }
+                );
+                stream.end(file.buffer);
+            });
+        });
+        // console.log("Array of pending promises created: ", uploadPromises);
+
+        const cloudinaryResults = await Promise.all(uploadPromises);
+
+        const photosData = cloudinaryResults.map((result: any) => ({
+            clerkId: "user_3E8C_BfNriZbIh",
+            url: result.secure_url,
+            public_id: result.public_id,
+            date: new Date(),
+            title: title || "Untitled Bulk Upload",
+            tags: tagsArray
+        }));
+
+        return res.status(201).json(
+            { 
+            success: true,
+            message: `${photosData.length} photos uploaded successfully!`,
+            data: photosData
+            });
+
+    } catch (err) {
+        return res.status(400).json({ success: false, message: "Bulk upload failed!"})
+    }
+};
