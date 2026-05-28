@@ -8,7 +8,7 @@ interface AuthenticatedRequest extends Request {
     };
 }
 
-export const uploadPhoto = async (req: AuthenticatedRequest, res: Response) => {
+export const uploadPhoto = async (req: AuthenticatedRequest, res: Response): Promise<any> => {
 
     if (!req.user || !req.user.id) {
         return res.status(401).json({ success: false, message: "Unauthorized! User not found." });
