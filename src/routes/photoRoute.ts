@@ -1,12 +1,16 @@
 import express from "express";
-import { uploadPhoto } from "../controllers/photoController";
 import { upload } from "../middleware/multer";
 import { clerkAuthGuard } from "../middleware/clerkAuthGuard";
-import { uploadBulkPhotos } from "../controllers/photoController";
+import { uploadPhoto, uploadBulkPhotos, getUserTimeline } from "../controllers/photoController";
 const photoRouter = express.Router();
 
-photoRouter.post("/upload", clerkAuthGuard, upload.single("photo"), uploadPhoto as any);
+// Single photo upload
+photoRouter.post("/upload", upload.single("photo"), uploadPhoto as any);
 
-photoRouter.post("/upload-bulk", clerkAuthGuard, upload.array("photos"), uploadBulkPhotos as any);
+// Bulk photo upload
+photoRouter.post("/upload-bulk", upload.array("photos"), uploadBulkPhotos as any);
+
+// Get user's timeline
+photoRouter.get("/timeline", getUserTimeline as any);
 
 export default photoRouter;
