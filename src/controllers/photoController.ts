@@ -79,7 +79,7 @@ export const uploadBulkPhotos = async (req: Request, res: Response) => {
                     { folder: 'bulk_photos' },
                     (error, result) => {
                         if(error) {
-                            console.error(`Cloudinary error for file ${index}:`, error);
+                            // console.error(`Cloudinary error for file ${index}:`, error);
                             return reject(error);
                         }
                         // console.log(`cloudinary success for file ${index}`);
@@ -101,6 +101,11 @@ export const uploadBulkPhotos = async (req: Request, res: Response) => {
             title: title || "Untitled Bulk Upload",
             tags: tagsArray
         }));
+        // console.log(photosData);
+
+        // For uploading all the bulk photos on DB
+        const newPhotos = await Photos.insertMany(photosData);
+        // console.log("Photos successfully uploaded on DB!");
 
         return res.status(201).json(
             { 
@@ -109,7 +114,28 @@ export const uploadBulkPhotos = async (req: Request, res: Response) => {
             data: photosData
             });
 
-    } catch (err) {
+    } catch (err: any) {
+        // console.error("Error:", err);
         return res.status(400).json({ success: false, message: "Bulk upload failed!"})
+    }
+};
+
+export const getUserTimeline = async (req: Request, res: Response) => {
+
+    try {
+        const clerkId = "user_3E8C_BfNriZbIh";
+    
+        const photos = await Photos.find({ clerkId }).sort({ date: -1 });
+        // console.log("Fetched photos count:", photos.length);
+
+        if(!photos || photos.length === 0) {
+            return res.status(200).json({ message: "No photos found on your timeline yet", data: [] });
+        }
+
+        return res.status(200).json({ success: true, message: "Here, is your timeline !", count: photos.length, data: photos})
+    
+    } catch (err: any) {
+        // console.error("Error fetching timeline:", err.message);
+        return res.status(400).json({ success: false, message: "Error: ", err });
     }
 };
