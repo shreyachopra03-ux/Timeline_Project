@@ -3,7 +3,6 @@ import mongoose from "mongoose";
 const photoSchema = new mongoose.Schema({
     clerkId: {
         type: String,
-        required: true,
     },
     url: {
         type: String,
