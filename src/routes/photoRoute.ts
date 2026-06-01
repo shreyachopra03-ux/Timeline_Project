@@ -14,6 +14,6 @@ photoRouter.post("/upload-bulk", upload.array("photos"), uploadBulkPhotos as any
 photoRouter.get("/timeline", getUserTimeline as any);
 
 // Edit a particular photo
-photoRouter.put("/:id", editUserPhoto as any)
+photoRouter.patch("/:id", editUserPhoto as any)
 
 export default photoRouter;

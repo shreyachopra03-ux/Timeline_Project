@@ -145,16 +145,16 @@ export const editUserPhoto = async (req: Request, res: Response) => {
     try {
         const { id } = req.params;
 
-        const { url, public_id, date, tags, title } = req.body;
+        const { tags, title } = req.body;
 
         const updatedPhoto = await Photos.findByIdAndUpdate(
             id,
-            { url, public_id, date, tags, title },
-            { new: true }
+            { tags, title },
+            { new: true, runValidators: true }
         );
 
         if(!updatedPhoto) {
-            return res.status(404).json({ success: false, message: "No updated found on this id!" });
+            return res.status(404).json({ success: false, message: "No updated photo found on this id!" });
         }
 
         return res.status(200).json({ success: true, message: "New photo uploaded successfully!", data: updatedPhoto });
