@@ -167,4 +167,23 @@ export const editUserPhoto = async(req: Request, res:Response ) => {
         console.error(err);
         return res.status(400).json({ success: false, error: err.message });
     } 
-}
+};
+
+export const deletePhoto = async(req: Request, res:Response) => {
+
+    try {
+        const { id } = req.params;
+
+        const deletedPhoto = await Photos.findByIdAndDelete(id);
+
+        if(!deletedPhoto) {
+            return res.status(404).json({ success: false, message: "No photo with this ID found!" });
+        }
+        
+        return res.status(200).json({ success: true, message: "Photo deleted successfully!", data: deletePhoto });
+
+    } catch (err: any) {
+        console.error(err);
+        return res.status(400).json({ success: false, error: err.message });
+    }
+};
