@@ -140,27 +140,31 @@ export const getUserTimeline = async (req: Request, res: Response) => {
     }
 };
 
-export const editUserPhoto = async (req: Request, res: Response) => {
+export const editUserPhoto = async(req: Request, res:Response ) => {
 
     try {
         const { id } = req.params;
 
-        const { tags, title } = req.body;
+        const { title, tags, url, public_id } = req.body;
+
+        if(url || public_id) {
+            return res.status(400).json({ success: false, message: "You can't change photo's url or it's public id!" });
+        }
 
         const updatedPhoto = await Photos.findByIdAndUpdate(
             id,
-            { tags, title },
+            { title, tags },
             { new: true, runValidators: true }
         );
 
         if(!updatedPhoto) {
-            return res.status(404).json({ success: false, message: "No updated photo found on this id!" });
+            return res.status(400).json({ success: false, message: "No photo found with this ID!" });
         }
 
-        return res.status(200).json({ success: true, message: "New photo uploaded successfully!", data: updatedPhoto });
-
-    } catch (err: any) {
-        console.error("Error :", err.message);
-        return res.status(400).json({ success: false, message: "Error:", err });
-    }
-};
+        return res.status(200).json({ success: true, message: "Photo updated successfully!", data: updatedPhoto });
+    } 
+    catch (err: any) {
+        console.error(err);
+        return res.status(400).json({ success: false, error: err.message });
+    } 
+}
