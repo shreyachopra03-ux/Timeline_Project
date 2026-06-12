@@ -8,7 +8,14 @@ POST /photos/upload
 POST /photos/upload-bulk
 GET /photos/timeline
 GET /photos/timeline?from=&to=
-GET /photos/:id
-PUT /photos/:id
+<!-- GET /photos/:id -->
+PATCH /photos/:id
 DELETE /photos/:id
 DELETE /photos/bulk-delete
+
+# Clips API
+POST /clips/generate
+GET /clips
+GET /clips/:id
+PUT /clips/:id/rename
+DELETE /clips/:id
