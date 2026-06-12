@@ -1,7 +1,7 @@
 import express from "express";
 import { upload } from "../middleware/multer";
 import { clerkAuthGuard } from "../middleware/clerkAuthGuard";
-import { uploadPhoto, uploadBulkPhotos, getUserTimeline, editUserPhoto, deletePhoto } from "../controllers/photoController";
+import { uploadPhoto, uploadBulkPhotos, getUserTimeline, editUserPhoto, deletePhoto, deleteBulkPhotos } from "../controllers/photoController";
 const photoRouter = express.Router();
 
 // Single photo upload
@@ -15,6 +15,9 @@ photoRouter.get("/timeline", getUserTimeline as any);
 
 // Edit a particular photo
 photoRouter.patch("/:id", editUserPhoto as any);
+
+// Delete bulk photos
+photoRouter.delete("/bulk-delete", deleteBulkPhotos  as any);
 
 // Delete a particular photo
 photoRouter.delete("/:id", deletePhoto as any);

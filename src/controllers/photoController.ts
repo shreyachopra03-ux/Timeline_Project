@@ -140,6 +140,16 @@ export const getUserTimeline = async (req: Request, res: Response) => {
     }
 };
 
+// export const getUserTimelineDateWise = async (req: Request, res: Response) => {
+
+//     try {
+
+//     } catch (err: any) {
+//         console.error(err.message);
+//         return res.status().json({ success: false, message: "", error: err.message });
+//     }
+// };
+
 export const editUserPhoto = async(req: Request, res:Response ) => {
 
     try {
@@ -179,11 +189,35 @@ export const deletePhoto = async(req: Request, res:Response) => {
         if(!deletedPhoto) {
             return res.status(404).json({ success: false, message: "No photo with this ID found!" });
         }
-        
+
         return res.status(200).json({ success: true, message: "Photo deleted successfully!", data: deletePhoto });
 
     } catch (err: any) {
         console.error(err);
         return res.status(400).json({ success: false, error: err.message });
+    }
+};
+
+export const deleteBulkPhotos = async(req: Request, res: Response) => {
+    
+    try {
+        const { ids } = req.body;
+      
+        if(!ids || !Array.isArray(ids) || ids.length === 0) {
+            return res.status(400).json({ success: false, message: "Please provide a valid array of photo ID's" });
+        }
+
+        const result = await Photos.deleteMany({ _id: { $in: ids } });
+
+        const deleteCount = result.deletedCount;
+        if(deleteCount === 0) {
+            return res.status(404).json({ success: false, message: "None of the provided ID's were found in the DB" });
+        }
+
+        return res.status(200).json({ success: true, message: `Successfully deleted ${deleteCount} photos` });
+
+    } catch (err: any) {
+        console.error(err.message);
+        return res.status(500).json({ success: false, message: "Something went wrong on the server" , error: err.message});
     }
 };
