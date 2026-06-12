@@ -4,7 +4,7 @@ import { clerkMiddleware } from "@clerk/express";
 const app = express();
 import webhookRouter from "./routes/webhookRoutes";
 import { connectDB } from "./config/database";
-import photoRouter from "./routes/photoRoute";
+import mediaRouter from "./routes/mediaRoute";
 const PORT: any = Number(process.env.PORT) || 7777;
 
 // Bypass tunnel header
@@ -17,7 +17,7 @@ app.use(clerkMiddleware());
 
 app.use("/api/webhooks", express.raw({ type: "application/json" }), webhookRouter);
 app.use(express.json());
-app.use("/photos", photoRouter);
+app.use("/media", mediaRouter);
 
 function startServer(port: number) {
     const server = app.listen(port, () => {

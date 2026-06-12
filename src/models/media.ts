@@ -1,6 +1,11 @@
 import mongoose from "mongoose";
 
-const photoSchema = new mongoose.Schema({
+const mediaSchema = new mongoose.Schema({
+    type: {
+        type: String,
+        enum: ['image', 'video'],
+        default: 'image'
+    },
     clerkId: {
         type: String,
     },
@@ -19,11 +24,11 @@ const photoSchema = new mongoose.Schema({
     },
     tags: {
         type: [String]
-    }
+    },
 }, {
     timestamps: true
 });
 
-const Photos = mongoose.model("Photos", photoSchema);
+const Media = mongoose.model("Media", mediaSchema);
 
-export default Photos;
+export default Media;
