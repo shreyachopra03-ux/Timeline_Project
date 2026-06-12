@@ -4,14 +4,14 @@
 POST /api/webhooks/clerk
 
 # Photos API
-POST /photos/upload 
-POST /photos/upload-bulk
-GET /photos/timeline
-GET /photos/timeline?from=&to=
+POST /media/upload 
+POST /media/upload-bulk
+GET /media/timeline
+GET /media/timeline?from=&to=
 <!-- GET /photos/:id -->
-PATCH /photos/:id
-DELETE /photos/:id
-DELETE /photos/bulk-delete
+PATCH /media/:id
+DELETE /media/:id
+DELETE /media/bulk-delete
 
 # Clips API
 POST /clips/generate
@@ -19,3 +19,4 @@ GET /clips
 GET /clips/:id
 PUT /clips/:id/rename
 DELETE /clips/:id
+
