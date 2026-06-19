@@ -15,7 +15,7 @@ app.use((req, res, next) => {
 
 app.use(clerkMiddleware());
 
-app.use("/api/webhooks", express.raw({ type: "application/json" }), webhookRouter);
+app.use("/api/webhooks/clerk", express.raw({ type: "application/json" }), webhookRouter);
 
 app.use(express.json({ limit: "100mb" })); 
 app.use(express.urlencoded({ limit: "100mb", extended: true }));
