@@ -1,1 +1,0 @@
-This is the backend part of the timeline project. 

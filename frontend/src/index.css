@@ -1,0 +1,66 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: #f5f0e8;
+  --foreground: #2c2416;
+  --card: #fefcf7;
+  --card-foreground: #2c2416;
+  --primary: #2c2416;
+  --primary-foreground: #fefcf7;
+  --secondary: #e8e0d0;
+  --secondary-foreground: #2c2416;
+  --muted: #ede6d8;
+  --muted-foreground: #8a7d68;
+  --accent: #e8d5b7;
+  --accent-foreground: #2c2416;
+  --destructive: #c0392b;
+  --destructive-foreground: #fff;
+  --border: rgba(44, 36, 22, 0.12);
+  --input-bg: #f3f3f5;
+  --ring: #ce93d8;
+  --radius: 0.625rem;
+  --radius-2xl: 1rem;
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #c8bfad transparent;
+}
+
+body {
+  font-family: 'DM Sans', system-ui, sans-serif;
+  background-color: var(--background);
+  color: var(--foreground);
+  min-height: 100vh;
+  background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23c8bfad' fill-opacity='0.15'%3E%3Cpath d='M30 0v60M0 30h60M27 27h6v6h-6z'/%3E%3C/g%3E%3C/svg%3E");
+}
+
+/* Animations */
+@keyframes slide-up {
+  from { transform: translateY(30px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.animate-slide-up {
+  animation: slide-up 0.5s ease-out;
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+.animate-fade-in {
+  animation: fade-in 0.3s ease-out;
+}
