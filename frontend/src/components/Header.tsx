@@ -39,7 +39,6 @@ export default function Header({ mediaCount = 0, onAddMemory }: Props) {
       </div>
 
       <div className="flex items-center gap-3">
-        {/* Navigation dots for non-home pages */}
         {!isHome && (
           <>
             <button
