@@ -4,7 +4,7 @@ import { getYearColor } from './PolaroidCard'
 
 interface Props {
   years: string[]
-}
+};
 
 export default function FilmstripFooter({ years }: Props) {
   const [showNav, setShowNav] = useState(false)
@@ -13,22 +13,22 @@ export default function FilmstripFooter({ years }: Props) {
 
   useEffect(() => {
     setShowNav(location.pathname === '/')
-  }, [location])
+  }, [location]);
 
   const scrollToYear = (year: string) => {
-    const el = document.getElementById(`year-${year}`)
+    const el = document.getElementById(`year-${year}`);
     if (el) {
       el.scrollIntoView({ behavior: 'smooth' })
-    }
-  }
+    }};
 
-  const isHome = location.pathname === '/'
+  const isHome = location.pathname === '/';
 
   return (
     <div
       className="fixed bottom-0 left-0 right-0 h-16 z-40"
       style={{ backgroundColor: '#1a1208' }}
     >
+      
       <div className="absolute inset-y-0 left-0 right-0 flex overflow-hidden">
         {Array.from({ length: 60 }).map((_, i) => (
           <div key={i} className="flex flex-col justify-between py-1.5 px-0.5 h-full" style={{ flex: '1 0 0' }}>
@@ -82,5 +82,4 @@ export default function FilmstripFooter({ years }: Props) {
         </div>
       )}
     </div>
-  )
-}
+)};
