@@ -1,28 +1,28 @@
-import { useEffect, useState } from 'react'
-import { useNavigate, Link } from 'react-router-dom'
-import { createSharedAlbum } from '../api/shared'
-import { getTimeline } from '../api/media'
-import MediaCard from '../components/MediaCard'
-import { useToast } from '../components/Toast'
-import PageHeader from '../components/PageHeader'
-import type { MediaItem } from '../api/media'
+import { useEffect, useState } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
+import { createSharedAlbum } from '../api/shared';
+import { getTimeline } from '../api/media';
+import MediaCard from '../components/MediaCard';
+import { useToast } from '../components/Toast';
+import PageHeader from '../components/PageHeader';
+import type { MediaItem } from '../api/media';
 
 export default function SharedCreate() {
-  const navigate = useNavigate()
-  const [title, setTitle] = useState('')
-  const [description, setDescription] = useState('')
-  const [media, setMedia] = useState<MediaItem[]>([])
-  const [selected, setSelected] = useState<Set<string>>(new Set())
-  const [loading, setLoading] = useState(true)
-  const [creating, setCreating] = useState(false)
-  const { toast } = useToast()
+  const navigate = useNavigate();
+  const [title, setTitle] = useState('');
+  const [description, setDescription] = useState('');
+  const [media, setMedia] = useState<MediaItem[]>([]);
+  const [selected, setSelected] = useState<Set<string>>(new Set());
+  const [loading, setLoading] = useState(true);
+  const [creating, setCreating] = useState(false);
+  const { toast } = useToast();
 
   useEffect(() => {
     getTimeline()
       .then((res) => setMedia(res.data))
       .catch((err: any) => toast(err.message, 'error'))
       .finally(() => setLoading(false))
-  }, [toast])
+  }, [toast]);
 
   const toggleSelect = (id: string) => {
     setSelected((prev) => {
@@ -31,7 +31,7 @@ export default function SharedCreate() {
       else next.add(id)
       return next
     })
-  }
+  };
 
   const handleCreate = async () => {
     if (!title.trim()) {
@@ -52,7 +52,7 @@ export default function SharedCreate() {
     } finally {
       setCreating(false)
     }
-  }
+  };
 
   return (
     <>
@@ -146,5 +146,4 @@ export default function SharedCreate() {
         </div>
       </main>
     </>
-  )
-}
+)};
