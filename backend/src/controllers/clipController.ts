@@ -1,15 +1,29 @@
-import { v2 as cloudinary } from 'cloudinary';
-import ffmpeg from 'fluent-ffmpeg';
+import cloudinary from '../config/cloudinary';
 import ffmpegStatic from 'ffmpeg-static';
 import fs from 'fs';
 import path from 'path';
 import axios from 'axios';
+import { execSync } from 'child_process';
 import { Request, Response } from 'express';
 import Clip from '../models/clip';
 import Media from '../models/media';
+import youtubedl from 'youtube-dl-exec';
 
-if (ffmpegStatic) {
-    ffmpeg.setFfmpegPath(ffmpegStatic);
+if (!ffmpegStatic) {
+    // console.error('FATAL: ffmpeg-static resolved to null. FFmpeg binary not found.');
+    process.exit(1);
+}
+
+const FFP_DIR = path.dirname(ffmpegStatic);
+const FFPROBE_TARGET = path.join(FFP_DIR, 'ffprobe.exe');
+if (!fs.existsSync(FFPROBE_TARGET)) {
+    try {
+        const ffprobePath = require('ffprobe-static').path;
+        if (fs.existsSync(ffprobePath)) {
+            fs.copyFileSync(ffprobePath, FFPROBE_TARGET);
+            // console.log('[FFMPEG] Copied ffprobe.exe to ffmpeg-static directory');
+        }
+    } catch { }
 }
 
 const MOCK_CLERK_ID = "6a0dc1a501c893d45ac99b3e";
@@ -23,8 +37,8 @@ export const generateClip = async (req: Request, res: Response) => {
     let tempDir: string | null = null;
 
     try {
-        const { mediaIds, title } = req.body;
-        console.log('Received timeline request:', { mediaIds, title });
+        const { mediaIds, title, audioUrl, audioVolume } = req.body;
+        console.log('Received timeline request:', { mediaIds, title, audioUrl, audioVolume });
 
         if (!mediaIds || !Array.isArray(mediaIds) || mediaIds.length === 0) {
             return res.status(400).json({ success: false, message: "Please provide mediaIds array containing valid database ObjectIds!" });
@@ -48,7 +62,7 @@ export const generateClip = async (req: Request, res: Response) => {
 
         for (let i = 0; i < orderedAssets.length; i++) {
             const asset: any = orderedAssets[i]; 
-            const targetUrl = asset.cloudinary_url || asset.url; 
+            const targetUrl = asset.cloudinary_url;
 
             if (!targetUrl) {
                 console.warn(`Asset at array sequence ${i} is missing an image/video source URL.`);
@@ -83,65 +97,88 @@ export const generateClip = async (req: Request, res: Response) => {
             throw new Error('No local file artifacts prepared for compile sequence.');
         }
 
+        const FFP = ffmpegStatic!;
         const outputPath = path.join(tempDir, 'timeline_output.mp4');
-        const ffCommand = ffmpeg();
 
-        let filterComplex = "";
-        let concatInputs = "";
+        const processedVideos: string[] = [];
 
-localAssets.forEach((asset: { path: string; type: string }, index: number) => {
-    ffCommand.input(asset.path);
+        for (let i = 0; i < localAssets.length; i++) {
+            const asset = localAssets[i];
+            const tempVideo = path.join(tempDir, `seg_${i}.mp4`);
 
-    if (asset.type === 'image') {
-        ffCommand.inputOptions(['-loop 1', '-t 4']);
+            const scaleFilter = "scale=1280:720:force_original_aspect_ratio=decrease,pad=1280:720:(ow-iw)/2:(oh-ih)/2,setsar=1";
+            let cmd: string;
 
-        filterComplex += `[${index}:v]scale=1280:720:force_original_aspect_ratio=decrease,pad=1280:720:(ow-iw)/2:(oh-ih)/2,setsar=1[v${index}];`;
-        filterComplex += `anullsrc=channel_layout=stereo:sample_rate=44100:d=4[a${index}];`;
-    } else {
-        filterComplex += `[${index}:v]scale=1280:720:force_original_aspect_ratio=decrease,pad=1280:720:(ow-iw)/2:(oh-ih)/2,setsar=1[v${index}];`;
-        filterComplex += `anullsrc=channel_layout=stereo:sample_rate=44100:d=4[a${index}];`;
-    }
+            if (asset.type === 'image') {
+                cmd = `"${FFP}" -loop 1 -t 4 -i "${asset.path}" -vf "${scaleFilter}" -pix_fmt yuv420p -c:v libx264 -preset superfast -y "${tempVideo}"`;
+            } else {
+                cmd = `"${FFP}" -t 4 -i "${asset.path}" -vf "${scaleFilter}" -pix_fmt yuv420p -c:v libx264 -preset superfast -y "${tempVideo}"`;
+            }
 
-    concatInputs += `[v${index}][a${index}]`;
-});
+            console.log(`[FFMPEG] Segment ${i}: ${cmd}`);
+            const segOut = execSync(cmd, { stdio: 'pipe', timeout: 120000 });
+            console.log(`[FFMPEG] Segment ${i} stdout: ${segOut.toString().trim() || '(empty)'}`);
+            console.log(`[FFMPEG] Segment ${i} done -> ${tempVideo}`);
+            processedVideos.push(tempVideo);
+        }
 
-filterComplex += `${concatInputs}concat=n=${localAssets.length}:v=1:a=1[outv][outa]`;
+        const concatFile = path.join(tempDir, 'files.txt');
+        const fileList = processedVideos.map(f => `file '${path.resolve(f).replace(/\\/g, '/')}'`).join('\n');
+        fs.writeFileSync(concatFile, fileList);
 
-        console.log('Launching multi-track timeline video stitching operations...');
+        const concatCmd = `"${FFP}" -f concat -safe 0 -i "${concatFile}" -c copy -y "${outputPath}"`;
+        // console.log(`[FFMPEG] Concat: ${concatCmd}`);
+        const concatOut = execSync(concatCmd, { stdio: 'pipe', timeout: 180000 });
+        // console.log(`[FFMPEG] Concat stdout: ${concatOut.toString().trim() || '(empty)'}`);
+        // console.log('[FFMPEG] Concatenation complete:', outputPath);
 
-        await new Promise<void>((resolve, reject) => {
-            ffCommand
-                .complexFilter(filterComplex)
-                .map('[outv]')
-                .map('[outa]')
-                .videoCodec('libx264')
-                .audioCodec('aac')
-                .outputOptions([
-                    '-pix_fmt yuv420p',
-                    '-preset superfast',
-                    '-vsync vfr'
-                ])
-                .output(outputPath)
-                .on('start', (cmd) => console.log('Running FFmpeg compiler processing filters...'))
-                .on('end', () => {
-                    console.log('Final stitching operation wrapped successfully.');
-                    resolve();
-                })
-                .on('error', (err) => {
-                    console.error('Pipeline operational runtime crash:', err);
-                    reject(err);
-                })
-                .run();
-        });
+        if (audioUrl) {
+            const vol = typeof audioVolume === 'number' ? audioVolume : 0.3;
+            // console.log(`[AUDIO] Downloading background audio from: ${audioUrl}`);
+            const audioPath = path.join(tempDir, 'background_audio.mp3');
 
-        console.log('Syncing generated output directly to Cloudinary storage server...');
+            const isYouTube = audioUrl.includes('youtube.com/watch') || audioUrl.includes('youtu.be/');
+            if (isYouTube) {
+                // console.log('[AUDIO] YouTube URL, using youtube-dl-exec to download + ffmpeg convert...');
+                const ffmpegDir = path.dirname(ffmpegStatic!);
+                await (youtubedl as any)(audioUrl, {
+                    extractAudio: true,
+                    audioFormat: 'mp3',
+                    output: audioPath,
+                    ffmpegLocation: ffmpegDir,
+                    noWarnings: true,
+                    noCheckCertificate: true,
+                });
+                // console.log('[AUDIO] YouTube audio downloaded + converted to MP3 via yt-dlp');
+            } else {
+                // console.log('[AUDIO] Direct URL, downloading via axios...');
+                const audioRes = await axios.get(audioUrl, { responseType: 'stream', timeout: 60000 });
+                await new Promise<void>((resolve, reject) => {
+                    const ws = fs.createWriteStream(audioPath);
+                    audioRes.data.pipe(ws);
+                    ws.on('finish', resolve);
+                    ws.on('error', reject);
+                });
+                // console.log('[AUDIO] Direct audio download complete');
+            }
+
+            const finalOutput = path.join(tempDir, 'timeline_with_audio.mp4');
+            const audioCmd = `"${FFP}" -i "${outputPath}" -i "${audioPath}" -c:v copy -c:a aac -map 0:v:0 -map 1:a:0 -shortest -af "volume=${vol}" -y "${finalOutput}"`;
+            // console.log(`[FFMPEG] Audio overlay: ${audioCmd}`);
+            const aOut = execSync(audioCmd, { stdio: 'pipe', timeout: 180000 });
+            // console.log(`[FFMPEG] Audio overlay stdout: ${aOut.toString().trim() || '(empty)'}`);
+            // console.log('[FFMPEG] Audio overlay complete:', finalOutput);
+            fs.renameSync(finalOutput, outputPath);
+        }
+
+        // console.log('Syncing generated output directly to Cloudinary storage server...');
         const uploadResult = await cloudinary.uploader.upload(outputPath, {
             resource_type: 'video',
             folder: 'timeline_clips',
             quality: 'auto'
         });
 
-        console.log('Cloudinary target production link received:', uploadResult.secure_url);
+        // console.log('Cloudinary target production link received:', uploadResult.secure_url);
 
         const newClip = new Clip({
             clerkId: MOCK_CLERK_ID,
@@ -156,15 +193,16 @@ filterComplex += `${concatInputs}concat=n=${localAssets.length}:v=1:a=1[outv][ou
         return res.status(201).json({ success: true, message: "Clip generated and mapped successfully!", data: savedClip });
 
     } catch (err: any) {
-        console.error('Timeline Generation Fatal Exception:', err);
+        // console.error('Timeline Generation Fatal Exception:', err);
         return res.status(500).json({ success: false, error: err.message || 'Server operations aborted.' });
+
     } finally {
         if (tempDir && fs.existsSync(tempDir)) {
             try {
                 fs.rmSync(tempDir, { recursive: true, force: true });
-                console.log('Cleaned up target temp workspace assets.');
+                // console.log('Cleaned up target temp workspace assets.');
             } catch (cleanupErr) {
-                console.error('Garbage collection warning:', cleanupErr);
+                // console.error('Garbage collection warning:', cleanupErr);
             }
         }
     }
