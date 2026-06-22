@@ -1,31 +1,35 @@
 import "dotenv/config";
-import express from "express";
-import { clerkMiddleware } from "@clerk/express";
+import express, { type Request, type Response, type NextFunction } from "express";
+import cors from "cors";
 const app = express();
 import webhookRouter from "./routes/webhookRoutes";
 import { connectDB } from "./config/database";
 import mediaRouter from "./routes/mediaRoute";
 import clipRouter from "./routes/clipRoute"; 
 import sharedRouter from "./routes/sharedRoute";
+import songRouter from "./routes/songRoute";
 
 const PORT: any = Number(process.env.PORT) || 7777;
 
-// Bypass tunnel header
-app.use((req, res, next) => {
-    res.setHeader("bypass-tunnel-reminder", "true");
-    next()
-});
-
-app.use(clerkMiddleware());
+app.use(cors());
 
 app.use("/api/webhooks/clerk", express.raw({ type: "application/json" }), webhookRouter);
 
 app.use(express.json({ limit: "100mb" })); 
 app.use(express.urlencoded({ limit: "100mb", extended: true }));
 
-app.use("/media", mediaRouter);
-app.use("/clips", clipRouter);
-app.use("/shared", sharedRouter);
+app.use("/api/media", mediaRouter);
+app.use("/api/clips", clipRouter);
+app.use("/api/shared", sharedRouter);
+app.use("/api/songs", songRouter);
+
+app.use((err: any, req: Request, res: Response, next: NextFunction) => {
+    console.error('Unhandled error:', err);
+    res.status(err.status || 500).json({
+        success: false,
+        error: err.message || 'Internal server error'
+    });
+});
 
 function startServer(port: number) {
     const server = app.listen(port, () => {
