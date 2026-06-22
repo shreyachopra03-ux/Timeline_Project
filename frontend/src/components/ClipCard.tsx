@@ -1,14 +1,14 @@
-import { Link } from 'react-router-dom'
-import type { ClipItem } from '../api/clips'
+import { Link } from 'react-router-dom';
+import type { ClipItem } from '../api/clips';
 
 function cleanName(name: string) {
   return name.replace(/\.[^.]+$/, '')
-}
+};
 
 interface Props {
   clip: ClipItem
   onDelete?: (id: string) => void
-}
+};
 
 export default function ClipCard({ clip, onDelete }: Props) {
   return (
@@ -36,6 +36,7 @@ export default function ClipCard({ clip, onDelete }: Props) {
           </p>
         </div>
       </Link>
+      
       {onDelete && (
         <div className="px-3 pb-3">
           <button
@@ -48,5 +49,4 @@ export default function ClipCard({ clip, onDelete }: Props) {
         </div>
       )}
     </div>
-  )
-}
+)};
