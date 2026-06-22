@@ -1,6 +1,8 @@
 import { Routes, Route, Navigate } from 'react-router-dom'
+import { AuthProvider } from './context/AuthContext'
 import { ToastProvider } from './components/Toast'
 import Layout from './components/Layout'
+import ProtectedRoute from './components/ProtectedRoute'
 import Dashboard from './pages/Dashboard'
 import Media from './pages/Media'
 import Clips from './pages/Clips'
@@ -9,23 +11,26 @@ import ClipDetail from './pages/ClipDetail'
 import Shared from './pages/Shared'
 import SharedCreate from './pages/SharedCreate'
 import SharedDetail from './pages/SharedDetail'
+import Login from './pages/Login'
+import Register from './pages/Register'
 
 export default function App() {
   return (
-    <ToastProvider>
-      <Layout>
+    <AuthProvider>
+      <ToastProvider>
         <Routes>
-          <Route path="/" element={<Dashboard />} />
-          <Route path="/media" element={<Media />} />
-          <Route path="/clips" element={<Clips />} />
-          <Route path="/clips/generate" element={<ClipGenerate />} />
-          <Route path="/clips/:id" element={<ClipDetail />} />
-          <Route path="/shared" element={<Shared />} />
-          <Route path="/shared/create" element={<SharedCreate />} />
-          <Route path="/shared/:id" element={<SharedDetail />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/" element={<ProtectedRoute><Layout><Dashboard /></Layout></ProtectedRoute>} />
+          <Route path="/media" element={<ProtectedRoute><Layout><Media /></Layout></ProtectedRoute>} />
+          <Route path="/clips" element={<ProtectedRoute><Layout><Clips /></Layout></ProtectedRoute>} />
+          <Route path="/clips/generate" element={<ProtectedRoute><Layout><ClipGenerate /></Layout></ProtectedRoute>} />
+          <Route path="/clips/:id" element={<ProtectedRoute><Layout><ClipDetail /></Layout></ProtectedRoute>} />
+          <Route path="/shared" element={<ProtectedRoute><Layout><Shared /></Layout></ProtectedRoute>} />
+          <Route path="/shared/create" element={<ProtectedRoute><Layout><SharedCreate /></Layout></ProtectedRoute>} />
+          <Route path="/shared/:id" element={<ProtectedRoute><Layout><SharedDetail /></Layout></ProtectedRoute>} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
-      </Layout>
-    </ToastProvider>
-  )
-}
+      </ToastProvider>
+    </AuthProvider>
+)};
