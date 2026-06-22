@@ -1,28 +1,29 @@
-import { useEffect, useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
-import { getAllClips, deleteClip } from '../api/clips'
-import ClipCard from '../components/ClipCard'
-import { useToast } from '../components/Toast'
-import PageHeader from '../components/PageHeader'
-import type { ClipItem } from '../api/clips'
+import { useEffect, useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { getAllClips, deleteClip } from '../api/clips';
+import ClipCard from '../components/ClipCard';
+import { useToast } from '../components/Toast';
+import PageHeader from '../components/PageHeader';
+import type { ClipItem } from '../api/clips';
 
 export default function Clips() {
-  const navigate = useNavigate()
-  const [clips, setClips] = useState<ClipItem[]>([])
-  const [loading, setLoading] = useState(true)
-  const { toast } = useToast()
+  const navigate = useNavigate();
+  const [clips, setClips] = useState<ClipItem[]>([]);
+  const [loading, setLoading] = useState(true);
+  const { toast } = useToast();
 
   useEffect(() => {
     getAllClips().then((res) => setClips(res.data)).catch(console.error).finally(() => setLoading(false))
-  }, [])
+  }, []);
 
   const handleDelete = async (id: string) => {
     try {
-      await deleteClip(id)
-      setClips((prev) => prev.filter((c) => c._id !== id))
-      toast('Clip deleted.', 'success')
-    } catch {
-      toast('Error deleting clip.', 'error')
+      await deleteClip(id);
+      setClips((prev) => prev.filter((c) => c._id !== id));
+      toast('Clip deleted.', 'success');
+    } 
+    catch {
+      toast('Error deleting clip.', 'error');
     }
   }
 
@@ -56,5 +57,4 @@ export default function Clips() {
         )}
       </main>
     </>
-  )
-}
+)};
