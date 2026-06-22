@@ -9,41 +9,46 @@ export interface ClipItem {
   duration: number
   createdAt: string
   updatedAt: string
-}
+};
 
 export interface ClipListResponse {
   success: boolean
   count: number
   data: ClipItem[]
-}
+};
 
 export interface ClipResponse {
   success: boolean
   message?: string
   data: ClipItem
-}
+};
 
 export async function getAllClips() {
-  const { data } = await api.get<ClipListResponse>('/clips')
+  const { data } = await api.get<ClipListResponse>('/api/clips')
   return data
-}
+};
 
 export async function getClip(id: string) {
-  const { data } = await api.get<ClipResponse>(`/clips/${id}`)
+  const { data } = await api.get<ClipResponse>(`/api/clips/${id}`)
   return data
-}
+};
 
-export async function generateClip(mediaIds: string[], title?: string) {
-  const { data } = await api.post<ClipResponse>('/clips/generate', { mediaIds, title })
+export async function generateClip(mediaIds: string[], title?: string, audioUrl?: string, audioVolume?: number) {
+  const { data } = await api.post<ClipResponse>('/api/clips/generate', { 
+    mediaIds, 
+    title,
+    audioUrl,
+    audioVolume
+  })
   return data
-}
+};
 
 export async function renameClip(id: string, title: string) {
-  const { data } = await api.put<ClipResponse>(`/clips/${id}/rename`, { title })
+  const { data } = await api.put<ClipResponse>(`/api/clips/${id}/rename`, { title })
   return data
-}
+};
 
 export async function deleteClip(id: string) {
-  const { data } = await api.delete(`/clips/${id}`)
+  const { data } = await api.delete(`/api/clips/${id}`)
   return data
-}
+};
