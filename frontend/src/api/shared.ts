@@ -4,7 +4,7 @@ export interface SharedMember {
   clerkId: string
   name?: string
   email?: string
-}
+};
 
 export interface SharedItem {
   _id: string
@@ -22,61 +22,61 @@ export interface SharedItem {
   inviteCode: string
   createdAt: string
   updatedAt: string
-}
+};
 
 export interface SharedListResponse {
   success: boolean
   count: number
   data: SharedItem[]
-}
+};
 
 export interface SharedResponse {
   success: boolean
   message?: string
   data: SharedItem
-}
+};
 
 export interface SharedMessageResponse {
   success: boolean
   message: string
-}
+};
 
 export async function getSharedAlbums() {
-  const { data } = await api.get<SharedListResponse>('/shared')
+  const { data } = await api.get<SharedListResponse>('/api/shared')
   return data
-}
+};
 
 export async function getSharedAlbum(id: string) {
-  const { data } = await api.get<SharedResponse>(`/shared/${id}`)
+  const { data } = await api.get<SharedResponse>(`/api/shared/${id}`)
   return data
-}
+};
 
 export async function createSharedAlbum(title: string, description?: string, mediaIds?: string[]) {
-  const { data } = await api.post<SharedResponse>('/shared/create', { title, description, mediaIds })
+  const { data } = await api.post<SharedResponse>('/api/shared/create', { title, description, mediaIds })
   return data
-}
+};
 
 export async function addPhotoToAlbum(albumId: string, mediaId: string) {
-  const { data } = await api.post<SharedResponse>(`/shared/${albumId}/add-photo`, { mediaId })
+  const { data } = await api.post<SharedResponse>(`/api/shared/${albumId}/add-photo`, { mediaId })
   return data
-}
+};
 
 export async function removePhotoFromAlbum(albumId: string, photoId: string) {
-  const { data } = await api.delete<SharedResponse>(`/shared/${albumId}/remove-photo/${photoId}`)
+  const { data } = await api.delete<SharedResponse>(`/api/shared/${albumId}/remove-photo/${photoId}`)
   return data
-}
+};
 
 export async function inviteMember(albumId: string, clerkId: string, name?: string, email?: string) {
-  const { data } = await api.post<SharedResponse>(`/shared/${albumId}/invite`, { clerkId, name, email })
+  const { data } = await api.post<SharedResponse>(`/api/shared/${albumId}/invite`, { clerkId, name, email })
   return data
-}
+};
 
 export async function removeMember(albumId: string, clerkId: string) {
-  const { data } = await api.delete<SharedResponse>(`/shared/${albumId}/remove-member/${clerkId}`)
+  const { data } = await api.delete<SharedResponse>(`/api/shared/${albumId}/remove-member/${clerkId}`)
   return data
-}
+};
 
 export async function deleteSharedAlbum(id: string) {
-  const { data } = await api.delete<SharedMessageResponse>(`/shared/${id}`)
+  const { data } = await api.delete<SharedMessageResponse>(`/api/shared/${id}`)
   return data
-}
+};
