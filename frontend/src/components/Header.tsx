@@ -3,7 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom'
 interface Props {
   mediaCount?: number
   onAddMemory: () => void
-}
+};
 
 export default function Header({ mediaCount = 0, onAddMemory }: Props) {
   const navigate = useNavigate()
@@ -99,5 +99,4 @@ export default function Header({ mediaCount = 0, onAddMemory }: Props) {
         )}
       </div>
     </header>
-  )
-}
+  )};
