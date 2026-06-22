@@ -29,3 +29,8 @@ DELETE /shared/:id/remove-photo/:photoId
 POST /shared/:id/invite
 DELETE /shared/:id/remove-member/:userId
 DELETE /shared/:id
+
+# Songs API
+POST /songs/upload
+GET /songs
+DELETE /songs/:id
