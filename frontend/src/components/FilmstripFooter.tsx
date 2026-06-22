@@ -54,7 +54,7 @@ export default function FilmstripFooter({ years }: Props) {
             )
           })}
         </div>
-      )}
+      )};
 
       {!isHome && (
         <div className="absolute inset-0 flex items-center justify-center gap-6">
