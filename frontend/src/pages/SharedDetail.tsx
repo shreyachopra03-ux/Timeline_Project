@@ -1,23 +1,25 @@
-import { useEffect, useState } from 'react'
-import { useParams, useNavigate, Link } from 'react-router-dom'
-import { getSharedAlbum, addPhotoToAlbum, removePhotoFromAlbum, inviteMember, removeMember, deleteSharedAlbum } from '../api/shared'
-import { getTimeline } from '../api/media'
-import { useToast } from '../components/Toast'
-import PageHeader from '../components/PageHeader'
-import type { SharedItem } from '../api/shared'
-import type { MediaItem } from '../api/media'
+import { useEffect, useState } from 'react';
+import { useParams, useNavigate, Link } from 'react-router-dom';
+import { getSharedAlbum, addPhotoToAlbum, removePhotoFromAlbum, inviteMember, removeMember, deleteSharedAlbum } from '../api/shared';
+import { getTimeline } from '../api/media';
+import { useUser } from '@clerk/clerk-react';
+import { useToast } from '../components/Toast';
+import PageHeader from '../components/PageHeader';
+import type { SharedItem } from '../api/shared';
+import type { MediaItem } from '../api/media';
 
 export default function SharedDetail() {
-  const { id } = useParams<{ id: string }>()
-  const navigate = useNavigate()
-  const [album, setAlbum] = useState<SharedItem | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [allMedia, setAllMedia] = useState<MediaItem[]>([])
-  const [showAddMedia, setShowAddMedia] = useState(false)
-  const [mediaLoading, setMediaLoading] = useState(false)
-  const [inviteClerkId, setInviteClerkId] = useState('')
-  const [inviteName, setInviteName] = useState('')
-  const { toast } = useToast()
+  const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
+  const [album, setAlbum] = useState<SharedItem | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [allMedia, setAllMedia] = useState<MediaItem[]>([]);
+  const [showAddMedia, setShowAddMedia] = useState(false);
+  const [mediaLoading, setMediaLoading] = useState(false);
+  const [inviteClerkId, setInviteClerkId] = useState('');
+  const [inviteName, setInviteName] = useState('');
+  const { user } = useUser();
+  const { toast } = useToast();
 
   useEffect(() => {
     if (!id) return
@@ -25,7 +27,7 @@ export default function SharedDetail() {
       .then((res) => setAlbum(res.data))
       .catch((err: any) => { toast(err.message, 'error'); navigate('/shared') })
       .finally(() => setLoading(false))
-  }, [id, navigate, toast])
+  }, [id, navigate, toast]);
 
   const loadMedia = async () => {
     setMediaLoading(true)
@@ -34,7 +36,7 @@ export default function SharedDetail() {
       setAllMedia(res.data)
     } catch (err: any) { toast(err.message, 'error') }
     finally { setMediaLoading(false) }
-  }
+  };
 
   const handleAddPhoto = async (mediaId: string) => {
     if (!album) return
@@ -43,7 +45,7 @@ export default function SharedDetail() {
       setAlbum(res.data)
       toast('Photo added', 'success')
     } catch (err: any) { toast(err.message, 'error') }
-  }
+  };
 
   const handleRemovePhoto = async (photoId: string) => {
     if (!album) return
@@ -52,7 +54,7 @@ export default function SharedDetail() {
       setAlbum(res.data)
       toast('Photo removed', 'success')
     } catch (err: any) { toast(err.message, 'error') }
-  }
+  };
 
   const handleInvite = async () => {
     if (!album || !inviteClerkId.trim()) return
@@ -63,7 +65,7 @@ export default function SharedDetail() {
       setInviteName('')
       toast('Member invited!', 'success')
     } catch (err: any) { toast(err.message, 'error') }
-  }
+  };
 
   const handleRemoveMember = async (clerkId: string) => {
     if (!album) return
@@ -72,7 +74,7 @@ export default function SharedDetail() {
       setAlbum(res.data)
       toast('Member removed', 'success')
     } catch (err: any) { toast(err.message, 'error') }
-  }
+  };
 
   const handleDelete = async () => {
     if (!album) return
@@ -81,7 +83,7 @@ export default function SharedDetail() {
       toast('Album deleted', 'success')
       navigate('/shared')
     } catch (err: any) { toast(err.message, 'error') }
-  }
+  };
 
   if (loading) {
     return (
@@ -92,11 +94,11 @@ export default function SharedDetail() {
         </div>
       </div>
     )
-  }
+  };
 
-  if (!album) return null
+  if (!album) return null;
 
-  const isOwner = album.ownerId === '6a0dc1a501c893d45ac99b3e'
+  const isOwner = album.ownerId === user?.id;
 
   return (
     <>
@@ -261,5 +263,4 @@ export default function SharedDetail() {
         </div>
       </main>
     </>
-  )
-}
+)};
