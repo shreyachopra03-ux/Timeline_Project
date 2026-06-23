@@ -1,17 +1,17 @@
-import { useState, useCallback, useRef } from 'react'
+import { useState, useCallback, useRef } from 'react';
 
 interface Props {
   onClose: () => void
   onUpload: (file: File, title: string, caption: string) => Promise<void>
-}
+};
 
 export default function UploadFormModal({ onClose, onUpload }: Props) {
-  const [file, setFile] = useState<File | null>(null)
-  const [title, setTitle] = useState('')
-  const [caption, setCaption] = useState('')
-  const [uploading, setUploading] = useState(false)
-  const [dragging, setDragging] = useState(false)
-  const inputRef = useRef<HTMLInputElement>(null)
+  const [file, setFile] = useState<File | null>(null);
+  const [title, setTitle] = useState('');
+  const [caption, setCaption] = useState('');
+  const [uploading, setUploading] = useState(false);
+  const [dragging, setDragging] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const handleDrop = useCallback((e: React.DragEvent) => {
     e.preventDefault()
@@ -20,7 +20,7 @@ export default function UploadFormModal({ onClose, onUpload }: Props) {
     if (f && (f.type.startsWith('image/') || f.type.startsWith('video/'))) {
       setFile(f)
     }
-  }, [])
+  }, []);
 
   const handleSubmit = async () => {
     if (!file) return
@@ -30,7 +30,7 @@ export default function UploadFormModal({ onClose, onUpload }: Props) {
     } finally {
       setUploading(false)
     }
-  }
+  };
 
   return (
     <div
@@ -43,7 +43,7 @@ export default function UploadFormModal({ onClose, onUpload }: Props) {
         style={{ backgroundColor: '#fefcf7', padding: '32px' }}
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Header */}
+        
         <div className="flex items-center justify-between mb-6">
           <h2 style={{ fontFamily: 'DM Serif Display, serif', fontSize: '24px', color: '#2c2416' }}>
             New Memory
@@ -59,7 +59,6 @@ export default function UploadFormModal({ onClose, onUpload }: Props) {
           </button>
         </div>
 
-        {/* Drop zone */}
         <div
           onDragOver={(e) => { e.preventDefault(); setDragging(true) }}
           onDragLeave={() => setDragging(false)}
@@ -111,7 +110,6 @@ export default function UploadFormModal({ onClose, onUpload }: Props) {
           )}
         </div>
 
-        {/* Form Fields */}
         <div className="space-y-3">
           <div>
             <label style={{ fontFamily: 'DM Sans, sans-serif', fontSize: '11px', color: '#8a7d68', letterSpacing: '0.08em', textTransform: 'uppercase' }}>
@@ -155,7 +153,6 @@ export default function UploadFormModal({ onClose, onUpload }: Props) {
           </div>
         </div>
 
-        {/* Submit */}
         <button
           onClick={handleSubmit}
           disabled={!file || uploading}
@@ -173,5 +170,4 @@ export default function UploadFormModal({ onClose, onUpload }: Props) {
         </button>
       </div>
     </div>
-  )
-}
+  )};
