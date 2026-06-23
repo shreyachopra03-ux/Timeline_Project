@@ -1,17 +1,17 @@
-import { useEffect, useState } from 'react'
-import { useParams, useNavigate } from 'react-router-dom'
-import { getClip, deleteClip } from '../api/clips'
-import { useToast } from '../components/Toast'
-import PageHeader from '../components/PageHeader'
-import type { ClipItem } from '../api/clips'
+import { useEffect, useState } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import { getClip, deleteClip } from '../api/clips';
+import { useToast } from '../components/Toast';
+import PageHeader from '../components/PageHeader';
+import type { ClipItem } from '../api/clips';
 
 export default function ClipDetail() {
-  const { id } = useParams<{ id: string }>()
-  const navigate = useNavigate()
-  const [clip, setClip] = useState<ClipItem | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [deleting, setDeleting] = useState(false)
-  const { toast } = useToast()
+  const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
+  const [clip, setClip] = useState<ClipItem | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [deleting, setDeleting] = useState(false);
+  const { toast } = useToast();
 
   useEffect(() => {
     if (!id) return
@@ -96,5 +96,4 @@ export default function ClipDetail() {
         </div>
       </main>
     </>
-  )
-}
+)};
