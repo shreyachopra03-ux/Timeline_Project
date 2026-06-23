@@ -1,5 +1,5 @@
-import { useState } from 'react'
-import type { MediaItem } from '../api/media'
+import { useState } from 'react';
+import type { MediaItem } from '../api/media';
 
 interface Props {
   item: MediaItem
@@ -7,20 +7,21 @@ interface Props {
   onToggle?: () => void
   selectable?: boolean
   onDelete?: (id: string) => void
-}
+};
 
 function cleanName(name: string) {
   return name.replace(/\.[^.]+$/, '')
-}
+};
 
 export default function MediaCard({ item, selected, onToggle, selectable, onDelete }: Props) {
-  const [loaded, setLoaded] = useState(false)
+  const [loaded, setLoaded] = useState(false);
 
   return (
     <div
-      className={`rounded-sm transition-all duration-200 ${
-        selected ? 'ring-2' : ''
-      }`}
+      onClick={selectable ? onToggle : undefined}
+      className={`relative rounded-sm transition-all duration-200 ${
+        selectable ? 'cursor-pointer hover:shadow-md' : ''
+      } ${selected ? 'ring-2' : ''}`}
       style={{
         backgroundColor: '#fefcf7',
         boxShadow: selected ? '0 0 0 2px #ce93d8' : '0 2px 10px rgba(0,0,0,0.1)',
@@ -28,7 +29,10 @@ export default function MediaCard({ item, selected, onToggle, selectable, onDele
     >
       {selectable && (
         <button
-          onClick={onToggle}
+          onClick={(e) => {
+            e.stopPropagation();
+            if (onToggle) onToggle();
+          }}
           className={`absolute top-2 left-2 z-10 w-5 h-5 rounded-full border flex items-center justify-center transition-all ${
             selected ? 'bg-[#ce93d8] border-[#ce93d8] text-white' : 'bg-white/80 border-gray-400'
           }`}
@@ -69,7 +73,10 @@ export default function MediaCard({ item, selected, onToggle, selectable, onDele
       {onDelete && (
         <div className="px-2 pb-2">
           <button
-            onClick={() => onDelete(item._id)}
+            onClick={(e) => {
+              e.stopPropagation();
+              if (onDelete) onDelete(item._id);
+            }}
             className="w-full text-xs font-medium py-1.5 rounded"
             style={{ backgroundColor: '#dc2626', color: 'white' }}
           >
@@ -78,5 +85,4 @@ export default function MediaCard({ item, selected, onToggle, selectable, onDele
         </div>
       )}
     </div>
-  )
-}
+)};
