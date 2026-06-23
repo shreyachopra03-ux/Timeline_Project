@@ -1,7 +1,7 @@
-import { useState } from 'react'
-import type { MediaItem } from '../api/media'
+import { useState } from 'react';
+import type { MediaItem } from '../api/media';
 
-const rotations = [-4, -2, 1, 3, -3, 2, -1, 4, -2.5, 1.5]
+const rotations = [-4, -2, 1, 3, -3, 2, -1, 4, -2.5, 1.5];
 
 export const yearColors: Record<string, { bg: string; tape: string; label: string }> = {
   '2020': { bg: '#fce4ec', tape: '#f48fb1', label: '#c2185b' },
@@ -11,30 +11,30 @@ export const yearColors: Record<string, { bg: string; tape: string; label: strin
   '2024': { bg: '#f3e5f5', tape: '#ce93d8', label: '#7b1fa2' },
   '2025': { bg: '#fbe9e7', tape: '#ffab91', label: '#bf360c' },
   '2026': { bg: '#e0f7fa', tape: '#80deea', label: '#00838f' },
-}
+};
 
-export const defaultColor = { bg: '#f3e5f5', tape: '#ce93d8', label: '#7b1fa2' }
+export const defaultColor = { bg: '#f3e5f5', tape: '#ce93d8', label: '#7b1fa2' };
 
 export function getYearColor(year: string) {
   return yearColors[year] || defaultColor
-}
+};
 
 interface Props {
   item: MediaItem
   year: string
   index: number
   onOpen: (item: MediaItem) => void
-}
+};
 
 function cleanName(name: string) {
   return name.replace(/\.[^.]+$/, '')
-}
+};
 
 export default function PolaroidCard({ item, year, index, onOpen }: Props) {
-  const [loaded, setLoaded] = useState(false)
-  const [liked, setLiked] = useState(false)
-  const c = getYearColor(year)
-  const rot = rotations[index % rotations.length]
+  const [loaded, setLoaded] = useState(false);
+  const [liked, setLiked] = useState(false);
+  const c = getYearColor(year);
+  const rot = rotations[index % rotations.length];
 
   return (
     <div
@@ -42,7 +42,6 @@ export default function PolaroidCard({ item, year, index, onOpen }: Props) {
       className="relative cursor-pointer group/card"
       style={{ zIndex: 1 }}
     >
-      {/* Tape Tab */}
       <div
         className="absolute -top-3 left-1/2 -translate-x-1/2 w-16 h-6 rounded-sm z-10"
         style={{
@@ -58,7 +57,6 @@ export default function PolaroidCard({ item, year, index, onOpen }: Props) {
         />
       </div>
 
-      {/* Card Body */}
       <div
         className="rounded-sm overflow-hidden transition-all duration-300 ease-out"
         style={{
@@ -69,7 +67,7 @@ export default function PolaroidCard({ item, year, index, onOpen }: Props) {
           transform: `rotate(${rot}deg)`,
         }}
       >
-        {/* Image Container */}
+  
         <div className="relative overflow-hidden bg-gray-200" style={{ width: '180px', height: '160px' }}>
           {!loaded && (
             <div className="absolute inset-0 bg-gray-200 animate-pulse" />
@@ -101,7 +99,6 @@ export default function PolaroidCard({ item, year, index, onOpen }: Props) {
             />
           )}
 
-          {/* Heart button */}
           <button
             onClick={(e) => { e.stopPropagation(); setLiked(!liked) }}
             className="absolute top-2 right-2 opacity-0 group-hover/card:opacity-100 transition-opacity"
@@ -112,7 +109,6 @@ export default function PolaroidCard({ item, year, index, onOpen }: Props) {
           </button>
         </div>
 
-        {/* Text Content */}
         <div className="mt-2 px-1 text-center">
           <p style={{ fontFamily: 'Caveat, cursive', fontSize: '15px', color: c.label, fontWeight: 600, lineHeight: 1.25 }}>
             {cleanName(item.fileName || 'Memory')}
@@ -124,4 +120,4 @@ export default function PolaroidCard({ item, year, index, onOpen }: Props) {
       </div>
     </div>
   )
-}
+};
