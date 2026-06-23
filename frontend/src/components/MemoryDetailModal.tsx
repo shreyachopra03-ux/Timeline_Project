@@ -1,6 +1,6 @@
-import { useEffect, useState } from 'react'
-import type { MediaItem } from '../api/media'
-import { getYearColor } from './PolaroidCard'
+import { useEffect, useState } from 'react';
+import type { MediaItem } from '../api/media';
+import { getYearColor } from './PolaroidCard';
 
 interface Props {
   items: MediaItem[]
@@ -9,17 +9,17 @@ interface Props {
   onPrev: () => void
   onNext: () => void
   onDelete?: (id: string) => void
-}
+};
 
 export default function MemoryDetailModal({ items, currentIndex, onClose, onPrev, onNext, onDelete }: Props) {
-  const item = items[currentIndex]
-  const [loaded, setLoaded] = useState(false)
-  const year = new Date(item.createdAt).getFullYear().toString()
-  const c = getYearColor(year)
+  const item = items[currentIndex];
+  const [loaded, setLoaded] = useState(false);
+  const year = new Date(item.createdAt).getFullYear().toString();
+  const c = getYearColor(year);
 
   useEffect(() => {
     setLoaded(false)
-  }, [currentIndex])
+  }, [currentIndex]);
 
   useEffect(() => {
     const handleKey = (e: KeyboardEvent) => {
@@ -29,7 +29,7 @@ export default function MemoryDetailModal({ items, currentIndex, onClose, onPrev
     }
     window.addEventListener('keydown', handleKey)
     return () => window.removeEventListener('keydown', handleKey)
-  }, [onClose, onPrev, onNext])
+  }, [onClose, onPrev, onNext]);
 
   return (
     <div
@@ -47,7 +47,7 @@ export default function MemoryDetailModal({ items, currentIndex, onClose, onPrev
         }}
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Tape Tab */}
+        
         <div
           className="absolute -top-3 left-1/2 -translate-x-1/2 w-16 h-6 rounded-sm z-10"
           style={{
@@ -63,7 +63,6 @@ export default function MemoryDetailModal({ items, currentIndex, onClose, onPrev
           />
         </div>
 
-        {/* Close button */}
         <button
           onClick={onClose}
           className="absolute top-3 right-3 w-7 h-7 rounded-full flex items-center justify-center transition-colors z-20"
@@ -74,7 +73,6 @@ export default function MemoryDetailModal({ items, currentIndex, onClose, onPrev
           </svg>
         </button>
 
-        {/* Prev button */}
         {currentIndex > 0 && (
           <button
             onClick={onPrev}
@@ -87,7 +85,6 @@ export default function MemoryDetailModal({ items, currentIndex, onClose, onPrev
           </button>
         )}
 
-        {/* Next button */}
         {currentIndex < items.length - 1 && (
           <button
             onClick={onNext}
@@ -100,7 +97,6 @@ export default function MemoryDetailModal({ items, currentIndex, onClose, onPrev
           </button>
         )}
 
-        {/* Image */}
         <div className="relative overflow-hidden bg-gray-200 w-full" style={{ aspectRatio: '4/3' }}>
           {!loaded && (
             <div className="absolute inset-0 bg-gray-200 animate-pulse" />
@@ -133,7 +129,6 @@ export default function MemoryDetailModal({ items, currentIndex, onClose, onPrev
           )}
         </div>
 
-        {/* Content */}
         <div className="mt-4 text-center">
           <h2 style={{ fontFamily: 'DM Serif Display, serif', fontSize: '24px', color: c.label }}>
             {(item.fileName || 'Memory').replace(/\.[^.]+$/, '')}
@@ -156,5 +151,4 @@ export default function MemoryDetailModal({ items, currentIndex, onClose, onPrev
         </div>
       </div>
     </div>
-  )
-}
+)};
