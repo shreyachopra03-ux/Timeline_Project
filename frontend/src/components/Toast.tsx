@@ -1,29 +1,29 @@
-import { createContext, useContext, useState, useCallback, type ReactNode } from 'react'
+import { createContext, useContext, useState, useCallback, type ReactNode } from 'react';
 
 interface Toast {
   id: number
   message: string
   type: 'success' | 'error' | 'info'
-}
+};
 
 interface ToastCtx {
   toast: (msg: string, type?: Toast['type']) => void
-}
+};
 
-const Ctx = createContext<ToastCtx>({ toast: () => {} })
+const Ctx = createContext<ToastCtx>({ toast: () => {} });
 
-export const useToast = () => useContext(Ctx)
+export const useToast = () => useContext(Ctx);
 
-let nextId = 0
+let nextId = 0;
 
 const icons = {
   success: '✓',
   error: '✕',
   info: 'i',
-}
+};
 
 export function ToastProvider({ children }: { children: ReactNode }) {
-  const [toasts, setToasts] = useState<Toast[]>([])
+  const [toasts, setToasts] = useState<Toast[]>([]);
 
   const addToast = useCallback((message: string, type: Toast['type'] = 'info') => {
     const id = nextId++
@@ -31,7 +31,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
     setTimeout(() => {
       setToasts((prev) => prev.filter((t) => t.id !== id))
     }, 3500)
-  }, [])
+  }, []);
 
   return (
     <Ctx.Provider value={{ toast: addToast }}>
@@ -62,5 +62,4 @@ export function ToastProvider({ children }: { children: ReactNode }) {
         ))}
       </div>
     </Ctx.Provider>
-  )
-}
+)};
