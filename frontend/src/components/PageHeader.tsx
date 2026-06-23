@@ -2,7 +2,7 @@ interface Props {
   title: string
   subtitle?: string
   action?: { label: string; onClick: () => void }
-}
+};
 
 export default function PageHeader({ title, subtitle, action }: Props) {
   return (
@@ -28,5 +28,4 @@ export default function PageHeader({ title, subtitle, action }: Props) {
         </button>
       )}
     </header>
-  )
-}
+)};
