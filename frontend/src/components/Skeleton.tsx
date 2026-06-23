@@ -1,6 +1,6 @@
 interface Props {
   className?: string
-}
+};
 
 export function MediaGridSkeleton({ count = 8 }: { count?: number }) {
   return (
@@ -15,8 +15,7 @@ export function MediaGridSkeleton({ count = 8 }: { count?: number }) {
         </div>
       ))}
     </div>
-  )
-}
+)};
 
 export function ClipGridSkeleton({ count = 8 }: { count?: number }) {
   return (
@@ -31,9 +30,8 @@ export function ClipGridSkeleton({ count = 8 }: { count?: number }) {
         </div>
       ))}
     </div>
-  )
-}
+)};
 
 export function CardSkeleton({ className }: Props) {
   return <div className={`skeleton ${className ?? ''}`} />
-}
+};
