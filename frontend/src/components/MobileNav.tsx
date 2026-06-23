@@ -1,13 +1,15 @@
-import { NavLink } from 'react-router-dom'
+import { NavLink } from 'react-router-dom';
+import { useAuth } from '@clerk/clerk-react';
 
 const links = [
   { to: '/', label: 'Home', icon: '📊' },
   { to: '/media', label: 'Media', icon: '🖼️' },
   { to: '/clips', label: 'Clips', icon: '🎬' },
   { to: '/shared', label: 'Shared', icon: '🔗' },
-]
+];
 
 export default function MobileNav() {
+  const { signOut } = useAuth();
   return (
     <nav className="lg:hidden fixed bottom-0 left-0 right-0 bg-sidebar border-t border-sidebar-border z-40">
       <div className="flex items-center justify-around py-1">
@@ -28,7 +30,15 @@ export default function MobileNav() {
             {link.label}
           </NavLink>
         ))}
+        <button
+          onClick={() => signOut()}
+          className="flex flex-col items-center gap-0.5 px-4 py-2 rounded-md text-xs font-medium text-red-500 hover:text-red-700 hover:bg-red-50 transition-all duration-200"
+          title="Sign Out"
+        >
+          <span className="text-lg">🚪</span>
+          Logout
+        </button>
       </div>
     </nav>
   )
-}
+};
