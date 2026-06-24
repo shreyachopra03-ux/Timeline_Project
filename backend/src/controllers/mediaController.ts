@@ -9,7 +9,6 @@ interface AuthenticatedRequest extends Request {
 }
 
 export const uploadMedia = async (req: AuthenticatedRequest, res: Response): Promise<any> => {
-    req.user = { id: "6a0dc1a501c893d45ac99b3e" };
     if (!req.user || !req.user.id) {
         return res.status(401).json({ success: false, message: "Unauthorized! User not found." });
     }
@@ -58,10 +57,10 @@ export const uploadMedia = async (req: AuthenticatedRequest, res: Response): Pro
     }
 };
 
-export const uploadBulkMedia = async (req: Request, res: Response) => {
+export const uploadBulkMedia = async (req: AuthenticatedRequest, res: Response) => {
 
     try {
-        const userId = "6a0dc1a501c893d45ac99b3e";
+        const userId = req.user?.id;
         if (!userId) {
             return res.status(401).json({ success: false, message: "Unauthorized! User not found." });
         }
@@ -109,11 +108,10 @@ export const uploadBulkMedia = async (req: Request, res: Response) => {
     }
 };
 
-export const getUserTimeline = async (req: Request, res: Response) => {
+export const getUserTimeline = async (req: AuthenticatedRequest, res: Response) => {
 
     try {
-        const clerkId = "6a0dc1a501c893d45ac99b3e"; 
-
+        const clerkId = req.user?.id;
         if (!clerkId) {
             return res.status(401).json({ success: false, message: "Unauthorized! User ID missing." });
         }
@@ -144,13 +142,13 @@ export const getUserTimeline = async (req: Request, res: Response) => {
     }
 };
 
-export const editUserMedia = async (req: Request, res: Response) => {
+export const editUserMedia = async (req: AuthenticatedRequest, res: Response) => {
 
     try {
         const { id } = req.params;
         const { title, tags, url, public_id } = req.body;
         
-        const clerkId = "6a0dc1a501c893d45ac99b3e"; 
+        const clerkId = req.user?.id;
 
         if (url || public_id) {
             return res.status(400).json({ success: false, message: "You can't change the media's URL or its public ID!" });
@@ -174,10 +172,10 @@ export const editUserMedia = async (req: Request, res: Response) => {
     } 
 };
 
-export const deleteMedia = async (req: Request, res: Response) => {
+export const deleteMedia = async (req: AuthenticatedRequest, res: Response) => {
     try {
         const { id } = req.params;
-        const clerkId = "6a0dc1a501c893d45ac99b3e"; 
+        const clerkId = req.user?.id;
 
         const deletedItem = await Media.findOneAndDelete({ _id: id, clerkId });
         if (!deletedItem) {
@@ -189,10 +187,10 @@ export const deleteMedia = async (req: Request, res: Response) => {
     }
 };
 
-export const deleteBulkMedia = async (req: Request, res: Response) => {
+export const deleteBulkMedia = async (req: AuthenticatedRequest, res: Response) => {
     try {
         const { ids } = req.body; 
-        const clerkId = "6a0dc1a501c893d45ac99b3e"; 
+        const clerkId = req.user?.id;
 
         if (!ids || !Array.isArray(ids) || ids.length === 0) {
             return res.status(400).json({ success: false, message: "Please provide an array of media IDs to delete." });
