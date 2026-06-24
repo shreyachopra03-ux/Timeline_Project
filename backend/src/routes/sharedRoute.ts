@@ -1,16 +1,10 @@
 import express from 'express';
-import {
-    createShared,
-    getUserShared,
-    getSharedById,
-    addPhotoToShared,
-    removePhotoFromShared,
-    inviteMember,
-    removeMember,
-    deleteShared,
-} from '../controllers/sharedController';
+import { clerkAuthGuard } from '../middleware/clerkAuthGuard';
+import { createShared, getUserShared, getSharedById, addPhotoToShared, removePhotoFromShared, inviteMember, removeMember, deleteShared } from '../controllers/sharedController';
 
 const sharedRouter = express.Router();
+
+sharedRouter.use(clerkAuthGuard as any);
 
 sharedRouter.post('/create', createShared as any);
 sharedRouter.get('/', getUserShared as any);
