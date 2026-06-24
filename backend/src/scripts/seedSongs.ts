@@ -4,7 +4,7 @@ import fs from "fs";
 import mongoose from "mongoose";
 import { v2 as cloudinary } from "cloudinary";
 import youtubedl from "youtube-dl-exec";
-import Song from "../src/models/song";
+import Song from "../models/song";
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -31,7 +31,7 @@ const SONGS: SongSeed[] = [
   { title: "Zihaal e Miskin", artist: "Vishal Mishra", query: "Zihaal e Miskin Vishal Mishra official audio" },
 ];
 
-const TMP_DIR = path.resolve(__dirname, "../.tmp-seed");
+const TMP_DIR = path.resolve(__dirname, "../../.tmp-seed");
 const SYSTEM_CLERK_ID = "system";
 
 async function downloadAudio(song: SongSeed, index: number): Promise<string> {
