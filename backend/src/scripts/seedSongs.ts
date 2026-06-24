@@ -4,12 +4,13 @@ import fs from "fs";
 import mongoose from "mongoose";
 import { v2 as cloudinary } from "cloudinary";
 import youtubedl from "youtube-dl-exec";
+import ffmpegPath from "ffmpeg-static";
 import Song from "../models/song";
 
 cloudinary.config({
-  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-  api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET,
+  cloud_name: 'dai9lkp7j',
+  api_key: '631996395849531',
+  api_secret: 'dFQN9CD6M27R3DkBKNHw3jYPMls'
 });
 
 interface SongSeed {
@@ -38,6 +39,8 @@ async function downloadAudio(song: SongSeed, index: number): Promise<string> {
   const outputPath = path.join(TMP_DIR, `${index}-${song.title.replace(/[^a-zA-Z0-9]/g, "_")}.%(ext)s`);
   console.log(`[${index + 1}/${SONGS.length}] Searching: ${song.query}`);
 
+  const ffmpegDir = ffmpegPath ? path.dirname(ffmpegPath) : undefined;
+
   const output = await youtubedl(`ytsearch:${song.query}`, {
     extractAudio: true,
     audioFormat: "mp3",
@@ -45,6 +48,7 @@ async function downloadAudio(song: SongSeed, index: number): Promise<string> {
     noPlaylist: true,
     quiet: true,
     noWarnings: true,
+    ffmpegLocation: ffmpegDir,
   });
 
   const stdout = typeof output === "string" ? output : String(output ?? "");
@@ -75,18 +79,9 @@ async function uploadToCloudinary(filePath: string, title: string) {
 }
 
 async function seed() {
-  if (!process.env.MONGO_URI) {
-    console.error("MONGO_URI not set in .env");
-    process.exit(1);
-  }
-  if (!process.env.CLOUDINARY_CLOUD_NAME) {
-    console.error("Cloudinary env vars not set in .env");
-    process.exit(1);
-  }
-
   fs.mkdirSync(TMP_DIR, { recursive: true });
 
-  await mongoose.connect(process.env.MONGO_URI);
+  await mongoose.connect('mongodb+srv://shreyaac03_db_user:6xFRTkRCcFTPhK7f@cluster0.quwf4qr.mongodb.net/?appName=Cluster0');
   console.log("Connected to MongoDB\n");
 
   for (let i = 0; i < SONGS.length; i++) {
