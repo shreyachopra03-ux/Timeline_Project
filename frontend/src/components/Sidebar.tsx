@@ -6,6 +6,7 @@ const links = [
   { to: '/media', label: 'Media', icon: 'Image' },
   { to: '/clips', label: 'Clips', icon: 'Video' },
   { to: '/clips/generate', label: 'Generate Clip', icon: 'Sparkles' },
+  { to: '/songs', label: 'Songs', icon: 'Music' },
   { to: '/shared', label: 'Shared Albums', icon: 'Share2' },
 ];
 
@@ -14,6 +15,7 @@ const icons: Record<string, string> = {
   Image: '🖼️',
   Video: '🎬',
   Sparkles: '✨',
+  Music: '🎵',
   Share2: '🔗',
 };
 

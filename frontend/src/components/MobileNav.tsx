@@ -5,6 +5,7 @@ const links = [
   { to: '/', label: 'Home', icon: '📊' },
   { to: '/media', label: 'Media', icon: '🖼️' },
   { to: '/clips', label: 'Clips', icon: '🎬' },
+  { to: '/songs', label: 'Songs', icon: '🎵' },
   { to: '/shared', label: 'Shared', icon: '🔗' },
 ];
 

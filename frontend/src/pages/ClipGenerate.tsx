@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getTimeline } from '../api/media';
 import { generateClip } from '../api/clips';
-import { getAllSongs, searchSongs } from '../api/songs';
+import { getAllSongs } from '../api/songs';
 import MediaCard from '../components/MediaCard';
 import { useToast } from '../components/Toast';
 import PageHeader from '../components/PageHeader';
@@ -51,9 +51,6 @@ export default function ClipGenerate() {
   const [selected, setSelected] = useState<string[]>([]);
   const [songs, setSongs] = useState<SongItem[]>(YOUTUBE_LIBRARY_FALLBACKS);
   const [selectedSongUrl, setSelectedSongUrl] = useState<string>('');
-  const [searchQuery, setSearchQuery] = useState<string>('');
-  const [searchResults, setSearchResults] = useState<SongItem[]>([]);
-  const [searching, setSearching] = useState(false);
   const [volume, setVolume] = useState<number>(30);
   const [title, setTitle] = useState('My Timeline Clip');
   const [loading, setLoading] = useState(true);
@@ -76,20 +73,6 @@ export default function ClipGenerate() {
         setLoading(false)
       })
   }, []);
-
-  const handleSearch = async (query: string) => {
-    setSearchQuery(query)
-    if (!query.trim()) { setSearchResults([]); return }
-    setSearching(true)
-    try {
-      const res = await searchSongs(query)
-      setSearchResults(res?.data || [])
-    } catch {
-      setSearchResults([])
-    } finally {
-      setSearching(false)
-    }
-  };
 
   const handleGenerate = async () => {
     if (selected.length === 0) { toast('Select at least one media item.', 'error'); return };
@@ -143,106 +126,39 @@ export default function ClipGenerate() {
 
           <div>
             <label className="text-xs font-medium uppercase tracking-wider" style={{ color: '#8a7d68' }}>
-              Background Music (YouTube Audio Library)
+              Background Music
             </label>
-            <div className="relative mt-1">
-              <input
-                value={searchQuery}
-                onChange={(e) => handleSearch(e.target.value)}
-                placeholder="Search for a song... (e.g. lofi, cinematic, pop)"
-                className="w-full rounded-md px-3 py-2.5 pr-10 outline-none transition-colors text-sm"
+            <div className="mt-1.5 space-y-0.5">
+              <button
+                onClick={() => setSelectedSongUrl('')}
+                className="w-full text-left px-3 py-2 text-sm rounded-sm transition-colors"
                 style={{
-                  border: '1px solid #c8bfad',
-                  backgroundColor: '#f5f0e8',
-                  color: '#2c2416',
+                  color: selectedSongUrl === '' ? '#2c2416' : '#8a7d68',
+                  backgroundColor: selectedSongUrl === '' ? '#ede6d8' : 'transparent',
+                  fontWeight: selectedSongUrl === '' ? 600 : 400,
                 }}
-              />
-              {searchQuery && (
+              >
+                🚫 No Background Music
+              </button>
+              {songs.map((song) => (
                 <button
-                  onClick={() => { setSearchQuery(''); setSearchResults([]) }}
-                  className="absolute right-2 top-1/2 -translate-y-1/2 text-lg leading-none"
-                  style={{ color: '#8a7d68' }}
+                  key={song._id}
+                  onClick={() => setSelectedSongUrl(song.url)}
+                  className="w-full text-left px-3 py-2 text-sm rounded-sm transition-colors hover:bg-[#e8e0d0]"
+                  style={{
+                    color: selectedSongUrl === song.url ? '#2c2416' : '#5c4f3a',
+                    backgroundColor: selectedSongUrl === song.url ? '#ede6d8' : 'transparent',
+                    fontWeight: selectedSongUrl === song.url ? 600 : 400,
+                  }}
                 >
-                  ✕
+                  🎵 {song.title}
+                  {song.artist ? <span className="text-xs ml-1" style={{ color: '#8a7d68' }}>by {song.artist}</span> : null}
                 </button>
-              )}
+              ))}
             </div>
-
-            {searching && (
-              <p className="text-xs mt-1.5" style={{ color: '#8a7d68' }}>
-                Searching YouTube Audio Library...
-              </p>
-            )}
-
-            {searchResults.length > 0 && !searching && (
-              <div className="mt-1.5 max-h-48 overflow-y-auto rounded-md border" style={{ borderColor: '#c8bfad', backgroundColor: '#f5f0e8' }}>
-                <button
-                  onClick={() => { setSelectedSongUrl(''); setSearchQuery(''); setSearchResults([]) }}
-                  className="w-full text-left px-3 py-2 text-sm border-b transition-colors"
-                  style={{
-                    borderColor: '#c8bfad',
-                    color: selectedSongUrl === '' ? '#2c2416' : '#8a7d68',
-                    backgroundColor: selectedSongUrl === '' ? '#ede6d8' : 'transparent',
-                    fontWeight: selectedSongUrl === '' ? 600 : 400,
-                  }}
-                >
-                  🚫 No Background Music
-                </button>
-                {searchResults.map((song) => (
-                  <button
-                    key={song._id}
-                    onClick={() => { setSelectedSongUrl(song.url); setSearchQuery(''); setSearchResults([]) }}
-                    className="w-full text-left px-3 py-2 text-sm border-b transition-colors last:border-b-0 hover:bg-[#e8e0d0]"
-                    style={{
-                      borderColor: '#c8bfad',
-                      color: selectedSongUrl === song.url ? '#2c2416' : '#5c4f3a',
-                      backgroundColor: selectedSongUrl === song.url ? '#ede6d8' : 'transparent',
-                      fontWeight: selectedSongUrl === song.url ? 600 : 400,
-                    }}
-                  >
-                    🎵 {song.title}
-                    {song.artist ? <span className="text-xs ml-1" style={{ color: '#8a7d68' }}>by {song.artist}</span> : null}
-                  </button>
-                ))}
-              </div>
-            )}
-
-            {!searchQuery && !searching && (
-              <div className="mt-1.5 space-y-0.5">
-                <button
-                  onClick={() => setSelectedSongUrl('')}
-                  className="w-full text-left px-3 py-2 text-sm rounded-sm transition-colors"
-                  style={{
-                    color: selectedSongUrl === '' ? '#2c2416' : '#8a7d68',
-                    backgroundColor: selectedSongUrl === '' ? '#ede6d8' : 'transparent',
-                    fontWeight: selectedSongUrl === '' ? 600 : 400,
-                  }}
-                >
-                  🚫 No Background Music
-                </button>
-                {songs.map((song) => (
-                  <button
-                    key={song._id}
-                    onClick={() => setSelectedSongUrl(song.url)}
-                    className="w-full text-left px-3 py-2 text-sm rounded-sm transition-colors hover:bg-[#e8e0d0]"
-                    style={{
-                      color: selectedSongUrl === song.url ? '#2c2416' : '#5c4f3a',
-                      backgroundColor: selectedSongUrl === song.url ? '#ede6d8' : 'transparent',
-                      fontWeight: selectedSongUrl === song.url ? 600 : 400,
-                    }}
-                  >
-                    🎵 {song.title}
-                    {song.artist ? <span className="text-xs ml-1" style={{ color: '#8a7d68' }}>by {song.artist}</span> : null}
-                  </button>
-                ))}
-              </div>
-            )}
-
-            {selectedSongUrl && !searchQuery && (
-              <p className="text-xs mt-1.5" style={{ color: '#7c6f5a' }}>
-                ✓ Background music selected
-              </p>
-            )}
+            <p className="text-xs mt-2" style={{ color: '#8a7d68' }}>
+              <a href="/songs" className="underline hover:text-[#2c2416]">Upload your own songs</a> to appear here
+            </p>
           </div>
 
           {selectedSongUrl && (

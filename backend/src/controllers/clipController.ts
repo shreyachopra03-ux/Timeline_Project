@@ -7,7 +7,6 @@ import { execSync } from 'child_process';
 import { Request, Response } from 'express';
 import Clip from '../models/clip';
 import Media from '../models/media';
-import ytdl from '@distube/ytdl-core';
 
 if (!ffmpegStatic) {
     // console.error('FATAL: ffmpeg-static resolved to null. FFmpeg binary not found.');
@@ -140,41 +139,13 @@ export const generateClip = async (req: AuthenticatedRequest, res: Response) => 
             // console.log(`[AUDIO] Downloading background audio from: ${audioUrl}`);
             const audioPath = path.join(tempDir, 'background_audio.mp3');
 
-            const isYouTube = audioUrl.includes('youtube.com/watch') || audioUrl.includes('youtu.be/');
-            if (isYouTube) {
-                const getInfoOpts: any = {};
-                const rawCookies = process.env.YOUTUBE_COOKIES;
-                if (rawCookies) {
-                    try {
-                        const cookies = JSON.parse(rawCookies);
-                        getInfoOpts.agent = ytdl.createAgent(cookies);
-                    } catch {
-                        getInfoOpts.requestOptions = {
-                            headers: { Cookie: rawCookies },
-                        };
-                    }
-                }
-                const info = await ytdl.getInfo(audioUrl, getInfoOpts);
-                const format = ytdl.chooseFormat(info.formats, { filter: 'audioonly', quality: 'highestaudio' });
-                if (!format?.url) throw new Error('Could not extract audio from YouTube video');
-                const audioRes = await axios.get(format.url, { responseType: 'stream', timeout: 60000 });
-                await new Promise<void>((resolve, reject) => {
-                    const ws = fs.createWriteStream(audioPath);
-                    audioRes.data.pipe(ws);
-                    ws.on('finish', resolve);
-                    ws.on('error', reject);
-                });
-            } else {
-                // console.log('[AUDIO] Direct URL, downloading via axios...');
-                const audioRes = await axios.get(audioUrl, { responseType: 'stream', timeout: 60000 });
-                await new Promise<void>((resolve, reject) => {
-                    const ws = fs.createWriteStream(audioPath);
-                    audioRes.data.pipe(ws);
-                    ws.on('finish', resolve);
-                    ws.on('error', reject);
-                });
-                // console.log('[AUDIO] Direct audio download complete');
-            }
+            const audioRes = await axios.get(audioUrl, { responseType: 'stream', timeout: 60000 });
+            await new Promise<void>((resolve, reject) => {
+                const ws = fs.createWriteStream(audioPath);
+                audioRes.data.pipe(ws);
+                ws.on('finish', resolve);
+                ws.on('error', reject);
+            });
 
             const finalOutput = path.join(tempDir, 'timeline_with_audio.mp4');
             const audioCmd = `"${FFP}" -i "${outputPath}" -i "${audioPath}" -c:v copy -c:a aac -map 0:v:0 -map 1:a:0 -shortest -af "volume=${vol}" -y "${finalOutput}"`;

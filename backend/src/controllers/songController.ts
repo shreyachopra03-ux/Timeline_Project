@@ -1,39 +1,25 @@
 import cloudinary from "../config/cloudinary";
 import { Request, Response } from "express";
 import Song from "../models/song";
-import ytSearch from 'yt-search';
 
 interface AuthenticatedRequest extends Request {
     user?: { id: string };
 }
 
-export const searchSongs = async (req: Request, res: Response) => {
+export const searchSongs = async (req: AuthenticatedRequest, res: Response) => {
     try {
         const { q } = req.query;
-        if (!q || typeof q !== 'string' || !q.trim()) {
-            return res.status(400).json({ success: false, message: "Search query (q) is required!" });
+        const query: any = { clerkId: req.user?.id };
+        if (q && typeof q === 'string' && q.trim()) {
+            query.$or = [
+                { title: { $regex: q.trim(), $options: 'i' } },
+                { artist: { $regex: q.trim(), $options: 'i' } },
+            ];
         }
-
-        const results = await ytSearch(q + " background music");
-        const videos = results?.videos || [];
-
-        const songs = videos
-            .filter((item: any) => item.videoId && item.title)
-            .map((item: any) => ({
-                _id: `yt-${item.videoId}`,
-                clerkId: "system",
-                title: item.title || "Unknown Track",
-                artist: item.author?.name || "YouTube Audio Library",
-                url: `https://www.youtube.com/watch?v=${item.videoId}`,
-                public_id: `yt_${item.videoId}`,
-                duration: item.duration?.seconds || 0,
-                createdAt: new Date().toISOString(),
-                updatedAt: new Date().toISOString()
-            }));
-
+        const songs = await Song.find(query).sort({ createdAt: -1 });
         return res.status(200).json({ success: true, count: songs.length, data: songs });
     } catch (err: any) {
-        console.error("YouTube search error:", err);
+        console.error("Song search error:", err);
         return res.status(500).json({ success: false, error: err.message || "Search failed" });
     }
 };
