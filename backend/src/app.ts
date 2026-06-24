@@ -42,7 +42,13 @@ app.use("/api/webhooks/clerk", express.raw({ type: "application/json" }), webhoo
 app.use(express.json({ limit: "100mb" })); 
 app.use(express.urlencoded({ limit: "100mb", extended: true }));
 
-app.use(clerkMiddleware());
+app.use(clerkMiddleware({
+    authorizedParties: [
+        process.env.FRONTEND_URL || "https://timeline-project-eosin.vercel.app",
+        "http://localhost:5173",
+        "http://localhost:3000"
+    ].filter(Boolean)
+}));
 
 app.use("/api/media", mediaRouter);
 app.use("/api/clips", clipRouter);
