@@ -4,6 +4,8 @@ import { clerkAuthGuard } from "../middleware/clerkAuthGuard";
 import { uploadMedia, uploadBulkMedia, getUserTimeline, editUserMedia, deleteMedia, deleteBulkMedia } from "../controllers/mediaController";
 const mediaRouter = express.Router();
 
+mediaRouter.use(clerkAuthGuard as any);
+
 // Single photo upload
 mediaRouter.post("/upload", upload.single("media"), uploadMedia as any);
 
