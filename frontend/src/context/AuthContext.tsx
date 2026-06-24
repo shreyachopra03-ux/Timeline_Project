@@ -1,5 +1,6 @@
 import { createContext, useContext, type ReactNode } from 'react';
 import { useAuth, useUser, ClerkProvider } from '@clerk/clerk-react';
+import TokenSync from '../components/TokenSync';
 
 const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY
 
@@ -29,6 +30,7 @@ function AuthProviderInner({ children }: { children: ReactNode }) {
         isLoaded
       }}
     >
+      <TokenSync />
       {children}
     </AuthContext.Provider>
   )

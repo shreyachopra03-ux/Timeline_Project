@@ -6,21 +6,6 @@ const api = axios.create({
   timeout: 300000, 
 });
 
-api.interceptors.request.use(async (config) => {
-  try {
-    const clerk = (window as any).Clerk;
-    if (clerk?.session) {
-      const token = await clerk.session.getToken();
-      if (token) {
-        config.headers.Authorization = `Bearer ${token}`;
-      }
-    }
-  } catch {
-    // Clerk not initialized yet
-  }
-  return config;
-});
-
 api.interceptors.response.use(
   (res) => res,
   (err) => {
