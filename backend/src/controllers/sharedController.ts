@@ -3,10 +3,12 @@ import crypto from 'crypto';
 import Shared from '../models/shared';
 import Media from '../models/media';
 
-const MOCK_CLERK_ID = '6a0dc1a501c893d45ac99b3e';
+interface AuthenticatedRequest extends Request {
+    user?: { id: string };
+}
 
-function getUserId(req: Request): string {
-    return (req as any).user?.id || MOCK_CLERK_ID;
+function getUserId(req: AuthenticatedRequest): string {
+    return req.user?.id || '';
 }
 
 // POST /shared/create
