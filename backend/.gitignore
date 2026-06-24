@@ -1,5 +1,7 @@
 node_modules/
 .env
-
 REVISION_NOTES.md
 *.png
+dist/
+temp_clips/
+*-player-script.js
