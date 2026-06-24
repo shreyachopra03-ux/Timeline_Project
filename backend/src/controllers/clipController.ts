@@ -7,7 +7,7 @@ import { execSync } from 'child_process';
 import { Request, Response } from 'express';
 import Clip from '../models/clip';
 import Media from '../models/media';
-import youtubedl from 'youtube-dl-exec';
+import ytdl from '@distube/ytdl-core';
 
 if (!ffmpegStatic) {
     // console.error('FATAL: ffmpeg-static resolved to null. FFmpeg binary not found.');
@@ -142,19 +142,16 @@ export const generateClip = async (req: AuthenticatedRequest, res: Response) => 
 
             const isYouTube = audioUrl.includes('youtube.com/watch') || audioUrl.includes('youtu.be/');
             if (isYouTube) {
-                // console.log('[AUDIO] YouTube URL, using youtube-dl-exec to download + ffmpeg convert...');
-                const ffmpegDir = path.dirname(ffmpegStatic!);
-                await (youtubedl as any)(audioUrl, {
-                    extractAudio: true,
-                    audioFormat: 'mp3',
-                    output: audioPath,
-                    ffmpegLocation: ffmpegDir,
-                    noWarnings: true,
-                    noCheckCertificate: true,
-                    extractorArgs: 'youtube:player_client=android',
-                    userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+                const info = await ytdl.getInfo(audioUrl);
+                const format = ytdl.chooseFormat(info.formats, { filter: 'audioonly', quality: 'highestaudio' });
+                if (!format?.url) throw new Error('Could not extract audio from YouTube video');
+                const audioRes = await axios.get(format.url, { responseType: 'stream', timeout: 60000 });
+                await new Promise<void>((resolve, reject) => {
+                    const ws = fs.createWriteStream(audioPath);
+                    audioRes.data.pipe(ws);
+                    ws.on('finish', resolve);
+                    ws.on('error', reject);
                 });
-                // console.log('[AUDIO] YouTube audio downloaded + converted to MP3 via yt-dlp');
             } else {
                 // console.log('[AUDIO] Direct URL, downloading via axios...');
                 const audioRes = await axios.get(audioUrl, { responseType: 'stream', timeout: 60000 });
