@@ -9,52 +9,30 @@ import PageHeader from '../components/PageHeader';
 import type { MediaItem } from '../api/media';
 import type { SongItem } from '../api/songs';
 
-const YOUTUBE_LIBRARY_FALLBACKS: SongItem[] = [
-  {
-    _id: "yt-1",
-    clerkId: "system",
-    title: "Crock Pot (Lofi Hip Hop)",
-    artist: "Diamond Ortiz",
-    url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
-    public_id: "yt_track_1",
-    duration: 180,
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString()
-  },
-  {
-    _id: "yt-2",
-    clerkId: "system",
-    title: "As You Fade Away (Cinematic)",
-    artist: "NEFFEX",
-    url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3",
-    public_id: "yt_track_2",
-    duration: 210,
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString()
-  },
-  {
-    _id: "yt-3",
-    clerkId: "system",
-    title: "Sunny Days (Pop/Cheerful)",
-    artist: "Anno Domini Beats",
-    url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3",
-    public_id: "yt_track_3",
-    duration: 145,
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString()
-  }
+const BOLYWOOD_SEED: SongItem[] = [
+  { _id: "seed-1", clerkId: "system", title: "Chaleya", artist: "Arijit Singh, Shilpa Rao", url: "", public_id: "", duration: 0, createdAt: "", updatedAt: "" },
+  { _id: "seed-2", clerkId: "system", title: "Kesariya", artist: "Arijit Singh", url: "", public_id: "", duration: 0, createdAt: "", updatedAt: "" },
+  { _id: "seed-3", clerkId: "system", title: "O Maahi", artist: "Arijit Singh, Pritam", url: "", public_id: "", duration: 0, createdAt: "", updatedAt: "" },
+  { _id: "seed-4", clerkId: "system", title: "Satranga", artist: "Arijit Singh", url: "", public_id: "", duration: 0, createdAt: "", updatedAt: "" },
+  { _id: "seed-5", clerkId: "system", title: "Heeriye", artist: "Jasleen Royal, Arijit Singh", url: "", public_id: "", duration: 0, createdAt: "", updatedAt: "" },
+  { _id: "seed-6", clerkId: "system", title: "What Jhumka", artist: "Amitabh Bhattacharya", url: "", public_id: "", duration: 0, createdAt: "", updatedAt: "" },
+  { _id: "seed-7", clerkId: "system", title: "Tum Kya Mile", artist: "Arijit Singh, Shreya Ghoshal", url: "", public_id: "", duration: 0, createdAt: "", updatedAt: "" },
+  { _id: "seed-8", clerkId: "system", title: "Dil Jhoom", artist: "Mithoon, Arijit Singh", url: "", public_id: "", duration: 0, createdAt: "", updatedAt: "" },
+  { _id: "seed-9", clerkId: "system", title: "Khalasi", artist: "Aditya Gadhvi, Achint", url: "", public_id: "", duration: 0, createdAt: "", updatedAt: "" },
+  { _id: "seed-10", clerkId: "system", title: "Zihaal e Miskin", artist: "Vishal Mishra", url: "", public_id: "", duration: 0, createdAt: "", updatedAt: "" },
 ];
 
 export default function ClipGenerate() {
   const navigate = useNavigate();
   const [media, setMedia] = useState<MediaItem[]>([]);
   const [selected, setSelected] = useState<string[]>([]);
-  const [songs, setSongs] = useState<SongItem[]>(YOUTUBE_LIBRARY_FALLBACKS);
+  const [songs, setSongs] = useState<SongItem[]>(BOLYWOOD_SEED);
   const [selectedSongUrl, setSelectedSongUrl] = useState<string>('');
   const [volume, setVolume] = useState<number>(30);
   const [title, setTitle] = useState('My Timeline Clip');
   const [loading, setLoading] = useState(true);
   const [generating, setGenerating] = useState(false);
+  const [seeded, setSeeded] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -65,7 +43,10 @@ export default function ClipGenerate() {
       .then(([mediaRes, songsRes]) => {
         if (mediaRes && mediaRes.data) setMedia(mediaRes.data);
         const dbSongs = songsRes && songsRes.data ? songsRes.data : [];
-        setSongs([...YOUTUBE_LIBRARY_FALLBACKS, ...dbSongs]);
+        if (dbSongs.length > 0) {
+          setSongs(dbSongs);
+          setSeeded(true);
+        }
         setLoading(false)
       })
       .catch((err) => {
@@ -140,7 +121,7 @@ export default function ClipGenerate() {
               >
                 🚫 No Background Music
               </button>
-              {songs.map((song) => (
+              {seeded ? songs.map((song) => (
                 <button
                   key={song._id}
                   onClick={() => setSelectedSongUrl(song.url)}
@@ -154,11 +135,14 @@ export default function ClipGenerate() {
                   🎵 {song.title}
                   {song.artist ? <span className="text-xs ml-1" style={{ color: '#8a7d68' }}>by {song.artist}</span> : null}
                 </button>
-              ))}
+              )              ) : (
+                <div className="rounded-md border border-dashed p-4 text-center" style={{ borderColor: '#c8bfad' }}>
+                  <p className="text-sm" style={{ color: '#8a7d68' }}>
+                    Run <code className="bg-[#ede6d8] px-1.5 py-0.5 rounded text-xs">npm run seed:songs</code> in the backend to populate the top 10 Bollywood songs.
+                  </p>
+                </div>
+              )}
             </div>
-            <p className="text-xs mt-2" style={{ color: '#8a7d68' }}>
-              <a href="/songs" className="underline hover:text-[#2c2416]">Upload your own songs</a> to appear here
-            </p>
           </div>
 
           {selectedSongUrl && (
