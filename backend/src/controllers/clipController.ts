@@ -26,14 +26,17 @@ if (!fs.existsSync(FFPROBE_TARGET)) {
     } catch { }
 }
 
-const MOCK_CLERK_ID = "6a0dc1a501c893d45ac99b3e";
+interface AuthenticatedRequest extends Request {
+    user?: { id: string };
+};
+
 const TEMP_DIR = path.join(process.cwd(), 'temp_clips');
 
 if (!fs.existsSync(TEMP_DIR)) {
     fs.mkdirSync(TEMP_DIR, { recursive: true });
-}
+};
 
-export const generateClip = async (req: Request, res: Response) => {
+export const generateClip = async (req: AuthenticatedRequest, res: Response) => {
     let tempDir: string | null = null;
 
     try {
@@ -95,7 +98,7 @@ export const generateClip = async (req: Request, res: Response) => {
 
         if (localAssets.length === 0) {
             throw new Error('No local file artifacts prepared for compile sequence.');
-        }
+        };
 
         const FFP = ffmpegStatic!;
         const outputPath = path.join(tempDir, 'timeline_output.mp4');
@@ -181,7 +184,7 @@ export const generateClip = async (req: Request, res: Response) => {
         // console.log('Cloudinary target production link received:', uploadResult.secure_url);
 
         const newClip = new Clip({
-            clerkId: MOCK_CLERK_ID,
+            clerkId: req.user?.id,
             title: title || `Timeline Clip ${new Date().toLocaleDateString()}`,
             url: uploadResult.secure_url,
             public_id: uploadResult.public_id,
@@ -208,10 +211,10 @@ export const generateClip = async (req: Request, res: Response) => {
     }
 };
 
-export const getAllClips = async (req: Request, res: Response) => {
+export const getAllClips = async (req: AuthenticatedRequest, res: Response) => {
 
     try {
-        const clips = await Clip.find({ clerkId: MOCK_CLERK_ID }).sort({ createdAt: -1 });
+        const clips = await Clip.find({ clerkId: req.user?.id }).sort({ createdAt: -1 });
         return res.status(200).json({ success: true, count: clips.length, data: clips });
     } 
     catch (err: any) {
@@ -219,11 +222,11 @@ export const getAllClips = async (req: Request, res: Response) => {
     }
 };
 
-export const getSingleClip = async (req: Request, res: Response) => {
+export const getSingleClip = async (req: AuthenticatedRequest, res: Response) => {
 
     try {
         const { id } = req.params;
-        const clip = await Clip.findOne({ _id: id, clerkId: MOCK_CLERK_ID });
+        const clip = await Clip.findOne({ _id: id, clerkId: req.user?.id });
         if (!clip) return res.status(404).json({ success: false, message: "Requested clip entry not found." });
         return res.status(200).json({ success: true, data: clip });
     } 
@@ -232,7 +235,7 @@ export const getSingleClip = async (req: Request, res: Response) => {
     }
 };
 
-export const renameClip = async (req: Request, res: Response) => {
+export const renameClip = async (req: AuthenticatedRequest, res: Response) => {
 
     try {
         const { id } = req.params;
@@ -240,7 +243,7 @@ export const renameClip = async (req: Request, res: Response) => {
         if (!title) return res.status(400).json({ success: false, message: "A replacement title field string is required." });
 
         const updatedClip = await Clip.findOneAndUpdate(
-            { _id: id, clerkId: MOCK_CLERK_ID },
+            { _id: id, clerkId: req.user?.id },
             { title },
             { new: true }
         );
@@ -252,11 +255,11 @@ export const renameClip = async (req: Request, res: Response) => {
     }
 };
 
-export const deleteClip = async (req: Request, res: Response) => {
+export const deleteClip = async (req: AuthenticatedRequest, res: Response) => {
 
     try {
         const { id } = req.params;
-        const deletedClip = await Clip.findOneAndDelete({ _id: id, clerkId: MOCK_CLERK_ID });
+        const deletedClip = await Clip.findOneAndDelete({ _id: id, clerkId: req.user?.id });
         if (!deletedClip) return res.status(404).json({ success: false, message: "Target clip data element not located." });
         return res.status(200).json({ success: true, message: "Clip deleted successfully from server index." });
     } 
