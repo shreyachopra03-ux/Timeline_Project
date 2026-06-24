@@ -1,6 +1,8 @@
 import "dotenv/config";
 import express, { type Request, type Response, type NextFunction } from "express";
 import cors from "cors";
+import { clerkMiddleware } from "@clerk/express"; 
+
 const app = express();
 import webhookRouter from "./routes/webhookRoutes";
 import { connectDB } from "./config/database";
@@ -13,7 +15,7 @@ const PORT: any = Number(process.env.PORT) || 7777;
 
 const allowedOrigins = [
     "https://timeline-project-eosin.vercel.app", 
-    "http://localhost:5173",                    
+    "http://localhost:5173",                     
     "http://localhost:3000"                      
 ];
 
@@ -33,6 +35,8 @@ app.use("/api/webhooks/clerk", express.raw({ type: "application/json" }), webhoo
 
 app.use(express.json({ limit: "100mb" })); 
 app.use(express.urlencoded({ limit: "100mb", extended: true }));
+
+app.use(clerkMiddleware());
 
 app.use("/api/media", mediaRouter);
 app.use("/api/clips", clipRouter);
