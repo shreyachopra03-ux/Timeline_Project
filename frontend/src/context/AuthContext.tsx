@@ -38,7 +38,7 @@ function AuthProviderInner({ children }: { children: ReactNode }) {
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   return (
-    <ClerkProvider publishableKey={PUBLISHABLE_KEY!} afterSignOutUrl="/login">
+    <ClerkProvider publishableKey={PUBLISHABLE_KEY!} proxyUrl="/clerk-proxy" afterSignOutUrl="/login">
       <AuthProviderInner>{children}</AuthProviderInner>
     </ClerkProvider>
   )

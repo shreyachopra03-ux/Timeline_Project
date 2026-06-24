@@ -1,5 +1,6 @@
 {
   "rewrites": [
+    { "source": "/clerk-proxy/(.*)", "destination": "https://infinite-mallard-31.clerk.accounts.dev/$1" },
     { "source": "/(.*)", "destination": "/index.html" }
   ]
 }
