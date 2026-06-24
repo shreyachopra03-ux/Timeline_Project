@@ -142,7 +142,19 @@ export const generateClip = async (req: AuthenticatedRequest, res: Response) => 
 
             const isYouTube = audioUrl.includes('youtube.com/watch') || audioUrl.includes('youtu.be/');
             if (isYouTube) {
-                const info = await ytdl.getInfo(audioUrl);
+                const getInfoOpts: any = {};
+                const rawCookies = process.env.YOUTUBE_COOKIES;
+                if (rawCookies) {
+                    try {
+                        const cookies = JSON.parse(rawCookies);
+                        getInfoOpts.agent = ytdl.createAgent(cookies);
+                    } catch {
+                        getInfoOpts.requestOptions = {
+                            headers: { Cookie: rawCookies },
+                        };
+                    }
+                }
+                const info = await ytdl.getInfo(audioUrl, getInfoOpts);
                 const format = ytdl.chooseFormat(info.formats, { filter: 'audioonly', quality: 'highestaudio' });
                 if (!format?.url) throw new Error('Could not extract audio from YouTube video');
                 const audioRes = await axios.get(format.url, { responseType: 'stream', timeout: 60000 });
