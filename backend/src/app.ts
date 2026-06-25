@@ -14,7 +14,7 @@ import songRouter from "./routes/songRoute";
 const PORT: any = Number(process.env.PORT) || 7777;
 
 const allowedOrigins = [
-    process.env.FRONTEND_URL || "https://timeline-project-eosin.vercel.app",
+    (process.env.FRONTEND_URL || "https://timeline-project-eosin.vercel.app").replace(/\/+$/, ""),
     "http://localhost:5173",
     "http://localhost:3000"
 ].filter(Boolean);
@@ -44,8 +44,7 @@ app.use(express.urlencoded({ limit: "100mb", extended: true }));
 
 app.use(clerkMiddleware({
     authorizedParties: [
-        process.env.FRONTEND_URL || "https://timeline-project-eosin.vercel.app",
-        "https://*.vercel.app",
+        (process.env.FRONTEND_URL || "https://timeline-project-eosin.vercel.app").replace(/\/+$/, ""),
         "http://localhost:5173",
         "http://localhost:3000"
     ].filter(Boolean)

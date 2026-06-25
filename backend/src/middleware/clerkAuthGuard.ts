@@ -8,15 +8,28 @@ interface AuthenticatedRequest extends Request {
 }
 
 export const clerkAuthGuard = (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
-    const { userId } = getAuth(req);
-
-    if (!userId) {
+    let auth;
+    try {
+        auth = getAuth(req);
+    } catch (err: any) {
+        console.error("[clerkAuthGuard] getAuth threw:", err.message);
         return res.status(401).json({
             success: false,
-            message: "Unauthorized: Please sign in to continue."
+            message: `Auth error: ${err.message}`
         });
     }
 
-    req.user = { id: userId };
+    if (!auth || !auth.userId) {
+        const reason = (auth as any)?.reason || "unknown";
+        const status = (auth as any)?.status || "signed_out";
+        console.error(`[clerkAuthGuard] Unauthorized - reason: ${reason}, status: ${status}, sessionClaims:`, (auth as any)?.sessionClaims);
+        return res.status(401).json({
+            success: false,
+            message: "Unauthorized: Please sign in to continue.",
+            debug: { reason, status }
+        });
+    }
+
+    req.user = { id: auth.userId };
     next();
 };
