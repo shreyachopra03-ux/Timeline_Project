@@ -39,8 +39,8 @@ export const generateClip = async (req: AuthenticatedRequest, res: Response) => 
     let tempDir: string | null = null;
 
     try {
-        const { mediaIds, title, audioUrl, audioVolume } = req.body;
-        console.log('Received timeline request:', { mediaIds, title, audioUrl, audioVolume });
+        const { mediaIds, title } = req.body;
+        console.log('Received timeline request:', { mediaIds, title });
 
         if (!mediaIds || !Array.isArray(mediaIds) || mediaIds.length === 0) {
             return res.status(400).json({ success: false, message: "Please provide mediaIds array containing valid database ObjectIds!" });
@@ -133,28 +133,6 @@ export const generateClip = async (req: AuthenticatedRequest, res: Response) => 
         const concatOut = execSync(concatCmd, { stdio: 'pipe', timeout: 180000 });
         // console.log(`[FFMPEG] Concat stdout: ${concatOut.toString().trim() || '(empty)'}`);
         // console.log('[FFMPEG] Concatenation complete:', outputPath);
-
-        if (audioUrl) {
-            const vol = typeof audioVolume === 'number' ? audioVolume : 0.3;
-            // console.log(`[AUDIO] Downloading background audio from: ${audioUrl}`);
-            const audioPath = path.join(tempDir, 'background_audio.mp3');
-
-            const audioRes = await axios.get(audioUrl, { responseType: 'stream', timeout: 60000 });
-            await new Promise<void>((resolve, reject) => {
-                const ws = fs.createWriteStream(audioPath);
-                audioRes.data.pipe(ws);
-                ws.on('finish', resolve);
-                ws.on('error', reject);
-            });
-
-            const finalOutput = path.join(tempDir, 'timeline_with_audio.mp4');
-            const audioCmd = `"${FFP}" -i "${outputPath}" -i "${audioPath}" -c:v copy -c:a aac -map 0:v:0 -map 1:a:0 -shortest -af "volume=${vol}" -y "${finalOutput}"`;
-            // console.log(`[FFMPEG] Audio overlay: ${audioCmd}`);
-            const aOut = execSync(audioCmd, { stdio: 'pipe', timeout: 180000 });
-            // console.log(`[FFMPEG] Audio overlay stdout: ${aOut.toString().trim() || '(empty)'}`);
-            // console.log('[FFMPEG] Audio overlay complete:', finalOutput);
-            fs.renameSync(finalOutput, outputPath);
-        }
 
         // console.log('Syncing generated output directly to Cloudinary storage server...');
         const uploadResult = await cloudinary.uploader.upload(outputPath, {

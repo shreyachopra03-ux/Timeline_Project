@@ -9,7 +9,6 @@ import { connectDB } from "./config/database";
 import mediaRouter from "./routes/mediaRoute";
 import clipRouter from "./routes/clipRoute"; 
 import sharedRouter from "./routes/sharedRoute";
-import songRouter from "./routes/songRoute";
 
 const PORT: any = Number(process.env.PORT) || 7777;
 
@@ -53,7 +52,6 @@ app.use(clerkMiddleware({
 app.use("/api/media", mediaRouter);
 app.use("/api/clips", clipRouter);
 app.use("/api/shared", sharedRouter);
-app.use("/api/songs", songRouter);
 
 app.use((err: any, req: Request, res: Response, next: NextFunction) => {
     console.error('Unhandled error:', err);

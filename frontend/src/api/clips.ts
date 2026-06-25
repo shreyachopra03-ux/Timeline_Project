@@ -33,12 +33,10 @@ export async function getClip(id: string) {
   return data
 };
 
-export async function generateClip(mediaIds: string[], title?: string, audioUrl?: string, audioVolume?: number) {
+export async function generateClip(mediaIds: string[], title?: string) {
   const { data } = await api.post<ClipResponse>('/api/clips/generate', { 
     mediaIds, 
-    title,
-    audioUrl,
-    audioVolume
+    title
   })
   return data
 };
