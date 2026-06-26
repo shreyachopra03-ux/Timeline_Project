@@ -22,7 +22,7 @@ function isOriginAllowed(origin: string): boolean {
     if (allowedOrigins.indexOf(origin) !== -1) return true;
     if (origin.endsWith(".vercel.app")) return true;
     return false;
-}
+};
 
 app.use(cors({
     origin: function (origin, callback) {
