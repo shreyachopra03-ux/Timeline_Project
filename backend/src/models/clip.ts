@@ -8,7 +8,7 @@ export interface IClip extends Document {
     duration: number;
     createdAt: Date;
     updatedAt: Date;
-}
+};
 
 const clipSchema = new Schema<IClip>(
     {

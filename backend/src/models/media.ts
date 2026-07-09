@@ -13,7 +13,7 @@ export interface IMedia extends Document {
     date?: Date;
     title?: String;
     tags?: string[];
-}
+};
  
 const mediaSchema = new Schema<IMedia>(
     {

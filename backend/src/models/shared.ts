@@ -4,7 +4,7 @@ export interface ISharedMember {
     clerkId: string;
     name?: string;
     email?: string;
-}
+};
 
 export interface IShared extends Document {
     ownerId: string;
@@ -15,7 +15,7 @@ export interface IShared extends Document {
     inviteCode: string;
     createdAt: Date;
     updatedAt: Date;
-}
+};
 
 const sharedSchema = new Schema<IShared>(
     {
