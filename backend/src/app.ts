@@ -55,10 +55,7 @@ app.use("/api/shared", sharedRouter);
 
 app.use((err: any, req: Request, res: Response, next: NextFunction) => {
     console.error('Unhandled error:', err);
-    res.status(err.status || 500).json({
-        success: false,
-        error: err.message || 'Internal server error'
-    });
+    res.status(err.status || 500).json({ success: false, error: err.message || 'Internal server error' });
 });
 
 function startServer(port: number) {
