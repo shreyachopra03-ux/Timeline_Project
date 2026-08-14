@@ -31,24 +31,6 @@ export default function Sidebar() {
         </div>
       </div>
 
-      <div className="px-4 pb-4 border-b border-sidebar-border">
-        <div className="flex items-center gap-2.5">
-          <div className="w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold shrink-0" style={{ backgroundColor: '#2c2416', color: '#fefcf7' }}>
-            {user?.firstName?.[0] || 'U'}
-          </div>
-          <div className="min-w-0 flex-1">
-            <p className="text-sm font-medium truncate" style={{ color: '#2c2416' }}>{user?.fullName || 'User'}</p>
-            <p className="text-[11px] truncate" style={{ color: '#8a7d68' }}>{user?.emailAddresses?.[0]?.emailAddress || ''}</p>
-          </div>
-          <button
-            onClick={() => signOut()}
-            className="shrink-0 text-xs px-2.5 py-1.5 rounded-md font-medium text-red-600 hover:text-red-700 hover:bg-red-50 transition-colors"
-          >
-            Logout
-          </button>
-        </div>
-      </div>
-
       <nav className="flex flex-col gap-1 px-3 pt-4 flex-1 overflow-y-auto">
         {links.map((link) => (
           <NavLink
@@ -68,5 +50,23 @@ export default function Sidebar() {
           </NavLink>
         ))}
       </nav>
+
+      <div className="px-4 pt-4 pb-5 border-t border-sidebar-border mb-10">
+        <div className="flex items-center gap-2.5">
+          <div className="w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold shrink-0" style={{ backgroundColor: '#2c2416', color: '#fefcf7' }}>
+            {user?.firstName?.[0] || 'U'}
+          </div>
+          <div className="min-w-0 flex-1">
+            <p className="text-sm font-medium truncate" style={{ color: '#2c2416' }}>{user?.fullName || 'User'}</p>
+            <p className="text-[11px] truncate" style={{ color: '#8a7d68' }}>{user?.emailAddresses?.[0]?.emailAddress || ''}</p>
+          </div>
+          <button
+            onClick={() => signOut()}
+            className="shrink-0 text-xs px-2.5 py-1.5 rounded-md font-medium text-red-600 hover:text-red-700 hover:bg-red-50 transition-colors"
+          >
+            Logout
+          </button>
+        </div>
+      </div>
     </aside>
 )};

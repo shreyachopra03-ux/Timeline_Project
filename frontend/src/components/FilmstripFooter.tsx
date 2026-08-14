@@ -25,18 +25,22 @@ export default function FilmstripFooter({ years }: Props) {
 
   return (
     <div
-      className="fixed bottom-0 left-0 right-0 h-16 z-40"
+      className="fixed bottom-0 left-0 right-0 h-10 z-40"
       style={{ backgroundColor: '#1a1208' }}
     >
-      
-      <div className="absolute inset-y-0 left-0 right-0 flex overflow-hidden">
-        {Array.from({ length: 60 }).map((_, i) => (
-          <div key={i} className="flex flex-col justify-between py-1.5 px-0.5 h-full" style={{ flex: '1 0 0' }}>
-            <div className="w-3 h-2 rounded-sm" style={{ backgroundColor: '#2d1f0a' }} />
-            <div className="w-3 h-2 rounded-sm" style={{ backgroundColor: '#2d1f0a' }} />
-          </div>
-        ))}
-      </div>
+
+      <div
+        className="absolute top-1 left-0 right-0 h-2"
+        style={{
+          backgroundImage: 'repeating-linear-gradient(to right, #2d1f0a 0px, #2d1f0a 10px, transparent 10px, transparent 22px)'
+        }}
+      />
+      <div
+        className="absolute bottom-1 left-0 right-0 h-2"
+        style={{
+          backgroundImage: 'repeating-linear-gradient(to right, #2d1f0a 0px, #2d1f0a 10px, transparent 10px, transparent 22px)'
+        }}
+      />
 
       {showNav && years.length > 0 && (
         <div className="absolute inset-0 flex items-center justify-center gap-8">
