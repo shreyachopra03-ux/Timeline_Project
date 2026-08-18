@@ -43,10 +43,10 @@ TimelineApp/
 
 ## Features
 
-- **Timeline** — upload photos/videos and browse them chronologically, filterable by date range
-- **Clips** — auto-generate, rename, and manage short video clips from your media
-- **Shared albums** — create shared collections, invite members, add/remove photos
-- **Auth** — Clerk-based authentication with webhook sync to the database
+- **Timeline** - upload photos/videos and browse them chronologically, filterable by date range
+- **Clips** - auto-generate, rename, and manage short video clips from your media
+- **Shared albums** - create shared collections, invite members, add/remove photos
+- **Auth** - Clerk-based authentication with webhook sync to the database
 
 ## Getting Started
 
